@@ -36,7 +36,8 @@ public class Room : MonoBehaviour
         }
     }
 
-    private List<DanceTile> _tiles = new List<DanceTile>();
+    private List<DanceTile> _tiles = new();
+    
     void Start()
     {
     }
