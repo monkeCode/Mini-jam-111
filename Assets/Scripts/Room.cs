@@ -9,7 +9,7 @@ using UnityEngine.Tilemaps;
 public class Room : MonoBehaviour
 {
     [SerializeField] private Tilemap _groundTileMap;
-    [SerializeField] private List<Entity> _entities;
+    private List<ITurned> _entities;
     [SerializeField] private Ways _ways;
     [Serializable]
     private struct Ways
@@ -18,10 +18,27 @@ public class Room : MonoBehaviour
         public Way Right;
         public Way Top;
         public Way Bottom;
+
+        public void Open()
+        {
+            Left.OpenDoor();
+            Right.OpenDoor();
+            Top.OpenDoor();
+            Bottom.OpenDoor();
+        }
+
+        public void Close()
+        {
+            Left.CloseDoor();
+            Right.CloseDoor();
+            Top.CloseDoor();
+            Bottom.CloseDoor();
+        }
     }
+
+    private List<DanceTile> _tiles = new List<DanceTile>();
     void Start()
     {
-        
     }
 
     public bool CanMove(Vector2 pos)
@@ -43,8 +60,34 @@ public class Room : MonoBehaviour
         }
         return null;
     }
-    public Vector2 MoveToPos(Vector2 start, Vector2 end)
+    public Stack<Vector2> MoveToPos(Vector2 start, Vector2 end)
     {
-        return Vector2.zero;
+        return null;
+    }
+
+    public void UpdateMap()
+    {
+        _tiles.ForEach(it => it.NextTurn());
+        _entities.ForEach(it => it.NextTurn());
+        if(_entities.Count > 0)
+            _ways.Close();
+        else
+        {
+            _ways.Open();
+        }
+    }
+
+    public void AddEntity(ITurned entity)
+    {
+        _entities.Add(entity);
+    }
+
+    public void RemoveEntity(ITurned entity)
+    {
+        _entities.Remove(entity);
+    }
+    public void AddTile(DanceTile tile)
+    {
+        _tiles.Add(tile);
     }
 }

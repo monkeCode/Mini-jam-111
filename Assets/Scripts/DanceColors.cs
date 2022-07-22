@@ -6,6 +6,7 @@ namespace Dance
 {
     public enum Color
     {
+        Null,
         Yellow,
         Green,
         Red,

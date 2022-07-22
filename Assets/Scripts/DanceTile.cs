@@ -12,28 +12,33 @@ namespace Dance{
     [SerializeField] private int _updateTurns;
     private int _turnNow;
     private SpriteRenderer _sprite;
-    public bool ActiveTile { get; private set; }
+    public bool ActiveTile => _turnNow <= 0;
     void Start()
     {
         _sprite = GetComponent<SpriteRenderer>();
         RandomColor();
+        GameManager.Instance.ActiveRoom.AddTile(this);
     }
     
     [ContextMenu("RandomColor")]
     private void RandomColor()
     {
-        _color = (Color) Random.Range(0, 5);
+        _color = (Color) Random.Range(1, 5);
         _sprite ??= GetComponent<SpriteRenderer>();
         _sprite.color = GameManager.Colors[_color];
 
     }
-    public void Use()
+    public Color Use()
     {
-        _turnNow = _updateTurns;
+        if (!ActiveTile)
+            return Color.Null;
+        _turnNow = _updateTurns+1;
+        return _color;
     }
     public void NextTurn()
     {
-        ActiveTile = --_turnNow <= 0;
+        _turnNow--;
+        _sprite.color = !ActiveTile ? UnityEngine.Color.grey : GameManager.Colors[_color];
     }
     
 }
