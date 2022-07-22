@@ -166,7 +166,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &425334638 stripped
 Transform:
@@ -324,7 +324,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.2787564, y: 1}
+    m_SensorSize: {x: 2.0647886, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -493,7 +493,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &670104968 stripped
 MonoBehaviour:
@@ -603,7 +603,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1286806074638042462, guid: c018fdd624978f9419d84ea91cf9e4c5, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1286806074638042462, guid: c018fdd624978f9419d84ea91cf9e4c5, type: 3}
       propertyPath: m_LocalPosition.x
@@ -664,7 +664,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5382443151582610084, guid: 1496852f14bcf7846a3b1733b0c64740, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5382443151582610084, guid: 1496852f14bcf7846a3b1733b0c64740, type: 3}
       propertyPath: m_LocalPosition.x
@@ -710,5 +710,21 @@ PrefabInstance:
       propertyPath: _test
       value: 
       objectReference: {fileID: 670104968}
+    - target: {fileID: 5382443151582610086, guid: 1496852f14bcf7846a3b1733b0c64740, type: 3}
+      propertyPath: _hitPoints
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 5382443151582610086, guid: 1496852f14bcf7846a3b1733b0c64740, type: 3}
+      propertyPath: _maxHitPoints
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5382443151582610086, guid: 1496852f14bcf7846a3b1733b0c64740, type: 3}
+      propertyPath: _abilities.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5382443151582610086, guid: 1496852f14bcf7846a3b1733b0c64740, type: 3}
+      propertyPath: _abilities.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 27e1a721736b5224b944baa68f173136, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1496852f14bcf7846a3b1733b0c64740, type: 3}
