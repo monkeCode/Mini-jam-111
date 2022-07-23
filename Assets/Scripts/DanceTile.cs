@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 namespace Dance{
     [RequireComponent(typeof(SpriteRenderer))]
-    public class DanceTile : MonoBehaviour, ITurned
+    public class DanceTile : MonoBehaviour, IFloorTile
 {
     [SerializeField] private Color _color;
     [SerializeField] private int _updateTurns;
@@ -28,18 +28,23 @@ namespace Dance{
         _sprite.color = GameManager.Colors[_color];
 
     }
-    public Color Use()
-    {
-        if (!ActiveTile)
-            return Color.Null;
-        _turnNow = _updateTurns+1;
-        return _color;
-    }
     public void NextTurn()
     {
         _turnNow--;
         _sprite.color = !ActiveTile ? UnityEngine.Color.grey : GameManager.Colors[_color];
     }
-    
+
+    public Vector2 Position => transform.position;
+
+    public bool CanStep => true;
+    public void Step(Transform target)
+    {
+        if (!ActiveTile) return;
+        if(target.TryGetComponent(out IDancer dancer))
+        {
+            dancer.AddColor(_color);
+            _turnNow = _updateTurns+1;
+        }
+    }
 }
 }

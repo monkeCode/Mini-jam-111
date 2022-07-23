@@ -6,18 +6,23 @@ using Dance;
 using UnityEngine;
 using Color = Dance.Color;
 
-public class Player : MonoBehaviour, IDamageable
+public class Player : MonoBehaviour, IDamageable, IDancer
 {
     private GameInput _input;
     private Dance.Color[] _colorSequence = new Dance.Color[8];
     [SerializeReference] private List<Ability> _abilities;
-    
-   [SerializeField] private int _hitPoints;
+    [SerializeField] private int _hitPoints;
    [SerializeField] private int _maxHitPoints;
+   [SerializeField] private int damage;
     public int HitPoints => _hitPoints;
     public int MaxHitPoints => _maxHitPoints;
+    public static Player Instance { get; private set; }
     void Start()
     {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
         _input = new GameInput();
         _input.Enable();
         _input.Player.Move.performed += context => Move(context.ReadValue<Vector2>());
@@ -28,25 +33,29 @@ public class Player : MonoBehaviour, IDamageable
     {
         if (Math.Abs(dir.x) < 1 && Math.Abs(dir.y) < 1)
             return;
-        if (GameManager.Instance.ActiveRoom.CanMove((Vector2) transform.position + dir))
+        var entity = GameManager.Instance.ActiveRoom.GetAllEntities().FirstOrDefault(en => (Vector2)en.transform.position == (Vector2)transform.position + dir);
+        if (entity != null)
         {
-            transform.Translate(dir);
-            var danceTile = GameManager.Instance.ActiveRoom.GetFloorTile(transform.position);
-            if (danceTile != null)
-            {
-                var color = danceTile.Use();
-                if (color != Color.Null)
-                {
-                    AddColor(color);
-                }
-                    
-            }
-
-            GameManager.Instance.NextTurn();
+            Attack(entity);
         }
+        else if (GameManager.Instance.ActiveRoom.CanMove((Vector2) transform.position + dir, out IFloorTile tile ))
+        {
+            transform.position += (Vector3)dir;
+            tile.Step(transform);
+        }
+        else
+        {
+            return;
+        }
+        GameManager.Instance.NextTurn();
     }
 
-    private void AddColor(Dance.Color color)
+    private void Attack(Entity entity)
+    {
+        entity.TakeDamage((uint) damage);
+    }
+
+    public void AddColor(Dance.Color color)
     {
         for (int i = 0; i < _colorSequence.Length; i++)
         {
