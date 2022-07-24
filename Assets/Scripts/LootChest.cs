@@ -28,12 +28,12 @@ public class LootChest : MonoBehaviour, IFloorTile
             var max = Player.Instance.MaxHitPoints;
             Player.Instance.Heal((uint) Random.Range( (float) (0.1* max), (float)(0.3*max)));
         }
-        else if(rand <=70)
-        {
-            //add money
-            var money =Random.Range(10, 31);
-            Player.Instance.CollectMoney((uint) money);
-        }
+        // else if(rand <=70)
+        // {
+        //     //add money
+        //     var money =Random.Range(10, 31);
+        //     Player.Instance.CollectMoney((uint) money);
+        // }
         else
         {
             //add ability

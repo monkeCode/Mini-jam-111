@@ -14,6 +14,8 @@ public class Player : MonoBehaviour, IDamageable, IDancer
     [SerializeField] private int _hitPoints;
    [SerializeField] private int _maxHitPoints;
    [SerializeField] private int damage;
+   [SerializeField] private Animator _healAnimator;
+   private Animator _animator;
     public int HitPoints => _hitPoints;
     public int MaxHitPoints => _maxHitPoints;
     public IReadOnlyList<Ability> Abilities => _abilities;
@@ -28,6 +30,7 @@ public class Player : MonoBehaviour, IDamageable, IDancer
         _input.Enable();
         _input.Player.Move.performed += context => Move(context.ReadValue<Vector2>());
         _input.Player.Sumbit.performed += context => UseAbility();
+        _animator = GetComponent<Animator>();
     }
 
     private void Move(Vector2 dir)
@@ -58,16 +61,16 @@ public class Player : MonoBehaviour, IDamageable, IDancer
 
     public void AddColor(Dance.Color color)
     {
-        for (int i = 0; i < _colorSequence.Length; i++)
-        {
-            if (_colorSequence[i] == Color.Null)
-            {
-                _colorSequence[i] = color;
-                return;
-            }
-        }
+        // for (int i = 0; i < _colorSequence.Length; i++)
+        // {
+        //     if (_colorSequence[i] == Color.Null)
+        //     {
+        //         _colorSequence[i] = color;
+        //         return;
+        //     }
+        // }
 
-        for (int i = _colorSequence.Length-1; i >0; i--)
+        for (int i = _colorSequence.Length-1; i > 0; i--)
         {
             _colorSequence[i] = _colorSequence[i - 1];
         }
@@ -77,6 +80,7 @@ public class Player : MonoBehaviour, IDamageable, IDancer
         // {
         //     Debug.Log(col);
         // }
+        UserInterface.Instance.UpdateSequence(_colorSequence);
     }
 
     private void UseAbility()
@@ -85,13 +89,16 @@ public class Player : MonoBehaviour, IDamageable, IDancer
         while (sequences.MoveNext())
         {
             var index = FindSubArrayIndex(sequences.Current.Sequence);
-            if(index != -1)
-                sequences.Current.Use(this);
-            for (int i = index; i < sequences.Current.Sequence.Count + index; i++)
+            if (index != -1)
             {
-                _colorSequence[i] = Color.Null;
+                sequences.Current.Use(this);
+                for (int i = index; i < sequences.Current.Sequence.Count + index; i++)
+                {
+                    _colorSequence[i] = Color.Null;
+                }
             }
         }
+        UserInterface.Instance.UpdateSequence(_colorSequence);
     }
 
     private int FindSubArrayIndex(IReadOnlyList<Dance.Color> sequence)
@@ -124,6 +131,7 @@ public class Player : MonoBehaviour, IDamageable, IDancer
         if (_hitPoints > _maxHitPoints)
             _hitPoints = _maxHitPoints;
         UserInterface.Instance.UpdateHpBar();
+        _healAnimator.SetTrigger("Heal");
     }
 
     public void Kill()
@@ -136,6 +144,7 @@ public class Player : MonoBehaviour, IDamageable, IDancer
     {
         if (_hitPoints > 0)
             _hitPoints -= (int)damage;
+        _animator.SetTrigger("TakeDamage");
         UserInterface.Instance.UpdateHpBar();
         if (_hitPoints <= 0)
             Die();

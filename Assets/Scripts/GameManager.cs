@@ -10,7 +10,8 @@ public class GameManager : MonoBehaviour
         {Dance.Color.Blue, new Color(45/255.0f, 149/255.0f, 191/255.0f)},
         {Dance.Color.Green, new Color(78/255.0f, 186/255.0f, 111/255.0f)},
         {Dance.Color.Red, new Color(241/255.0f, 90/255.0f, 90/255.0f)},
-        {Dance.Color.Purple, new Color(149/255.0f, 91/255.0f, 165/255.0f)}
+        {Dance.Color.Purple, new Color(149/255.0f, 91/255.0f, 165/255.0f)},
+        {Dance.Color.Null, Color.grey}
     };
 
     [SerializeField] private Room _startRoom;
