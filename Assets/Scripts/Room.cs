@@ -6,19 +6,24 @@ using Dance;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Color = UnityEngine.Color;
+using Random = UnityEngine.Random;
 
 public class Room : MonoBehaviour
 {
     private List<ITurned> _entities = new();
     [SerializeField] private Ways _ways;
     [Serializable]
-    private struct Ways
+    private class Ways
     {
         public Way Left;
         public Way Right;
         public Way Top;
         public Way Bottom;
 
+        public IReadOnlyList<Way> GetWays()
+        {
+            return new List<Way> {Left, Top, Right, Bottom};
+        }
         public void Open()
         {
             Left.OpenDoor();
@@ -39,7 +44,13 @@ public class Room : MonoBehaviour
     private List<IFloorTile> _tiles = new();
     private IFloorTile[,] _logicalMap;
     private Vector2Int _offset;
-    
+    public Room[] Rooms = new Room[4];
+
+    private void Start()
+    {
+        _ways.Close();
+    }
+
     private void UpdateLogicalMap()
     {
         var minVector = new Vector2Int((int) _tiles.Min(tile => tile.Position.x), 
@@ -203,5 +214,33 @@ public class Room : MonoBehaviour
     public IReadOnlyList<Entity> GetAllEntities()
     {
         return _entities.Select(en => (Entity) en).ToList();
+    }
+
+    public void Exit(Way way)
+    {
+        int index = (int) way.Dir;
+
+        if (Rooms[index] == null)
+        {
+            Rooms[index] = GameManager.Instance.GenerateRoom();
+           
+            Rooms[index].Rooms[(index + 2) % 4] = this;
+            for (int i = 0; i < 4; i++)
+            {
+                if (i != (index + 2) % 4)
+                {
+                    if(Random.Range(0,2) ==1)
+                        Rooms[index]._ways.GetWays()[i].BlockDoor();
+                }
+            }
+        }
+
+        Vector2 pos = Vector2.zero;
+        pos = Rooms[index]._ways.GetWays()[(index + 2) % 4].EnterPonit;
+        
+        Player.Instance.transform.position = pos;
+        GameManager.Instance.ActiveRoom = Rooms[index];
+        Rooms[index].gameObject.SetActive(true);
+        transform.gameObject.SetActive(false);
     }
 }

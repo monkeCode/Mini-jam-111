@@ -12,8 +12,11 @@ public class GameManager : MonoBehaviour
         {Dance.Color.Red, new Color(241/255.0f, 90/255.0f, 90/255.0f)},
         {Dance.Color.Purple, new Color(149/255.0f, 91/255.0f, 165/255.0f)}
     };
-    
+
+    [SerializeField] private Room _startRoom;
     [SerializeField]private Room _activeRoom;
+    [SerializeField] private Room _bossRoom;
+    [SerializeField] private Room[] _rooms;
 
     public Room ActiveRoom
     {
@@ -30,6 +33,7 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
             Instance = this;
         else Destroy(gameObject);
+        ActiveRoom = Instantiate(_startRoom);
     }
     
     void Update()
@@ -40,5 +44,27 @@ public class GameManager : MonoBehaviour
     public void NextTurn()
     {
         ActiveRoom.UpdateMap();
+    }
+
+    private bool _bossRoomExist = false;
+    public Room GenerateRoom()
+    {
+        Room room;
+        if (_bossRoomExist)
+        {
+            room = _rooms[Random.Range(0, _rooms.Length)];
+        }
+        else
+        {
+            room = Random.Range(1, 101) switch
+            {
+                >=70 => _bossRoom,
+                _ => _rooms[Random.Range(0, _rooms.Length)]
+            };
+            if (room == _bossRoom)
+                _bossRoomExist = true;
+        }
+
+        return Instantiate(room);
     }
 }

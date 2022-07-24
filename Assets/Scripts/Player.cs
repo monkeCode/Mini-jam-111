@@ -16,6 +16,7 @@ public class Player : MonoBehaviour, IDamageable, IDancer
    [SerializeField] private int damage;
     public int HitPoints => _hitPoints;
     public int MaxHitPoints => _maxHitPoints;
+    public IReadOnlyList<Ability> Abilities => _abilities;
     public static Player Instance { get; private set; }
     void Start()
     {
@@ -111,13 +112,18 @@ public class Player : MonoBehaviour, IDamageable, IDancer
         }
         return -1;
     }
-    
+
+    public void AddAbility(Ability ability)
+    {
+        _abilities.Add(ability);
+    }
 
     public void Heal(uint healp)
     {
         _hitPoints += (int)healp;
         if (_hitPoints > _maxHitPoints)
             _hitPoints = _maxHitPoints;
+        UserInterface.Instance.UpdateHpBar();
     }
 
     public void Kill()
@@ -130,11 +136,17 @@ public class Player : MonoBehaviour, IDamageable, IDancer
     {
         if (_hitPoints > 0)
             _hitPoints -= (int)damage;
+        UserInterface.Instance.UpdateHpBar();
         if (_hitPoints <= 0)
             Die();
     }
 
     private void Die()
     {
+    }
+
+    public void CollectMoney(uint money)
+    {
+        //TODO:collect money
     }
 }
