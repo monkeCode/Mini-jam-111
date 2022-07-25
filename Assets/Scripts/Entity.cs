@@ -12,7 +12,7 @@ public class Entity : MonoBehaviour, IDamageable, ITurned
   public int HitPoints => hitPoints;
   public int MaxHitPoints => maxHitPoints;
 
-  public void Heal(uint healp)
+  public virtual void Heal(uint healp)
   {
       hitPoints += (int)healp;
       if (hitPoints > maxHitPoints)
@@ -20,7 +20,7 @@ public class Entity : MonoBehaviour, IDamageable, ITurned
   }
 
 
-  public void TakeDamage(uint damage)
+  public virtual void TakeDamage(uint damage)
     {
         if (hitPoints > 0)
             hitPoints -= (int)damage;

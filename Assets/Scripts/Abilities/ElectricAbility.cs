@@ -11,12 +11,19 @@ public class ElectricAbility : Ability
 
     public override void Use(IDamageable target)
     {
-        var entityList = GameManager.Instance.ActiveRoom.GetAllEntities().Take(countOfEntities);
-        foreach (var ent in entityList)
+        if (target == Player.Instance)
         {
-            ent.TakeDamage((uint) damage);
-            Instantiate(effect, ent.transform.position, Quaternion.identity);
+            var entityList = GameManager.Instance.ActiveRoom.GetAllEntities().Take(countOfEntities);
+            foreach (var ent in entityList)
+            {
+                ent.TakeDamage((uint) damage);
+                Instantiate(effect, ent.transform.position, Quaternion.identity);
+            }
         }
-
+        else
+        {
+            Player.Instance.TakeDamage((uint) damage);
+            Instantiate(effect, Player.Instance.transform.position, Quaternion.identity);
+        }
     }
 }

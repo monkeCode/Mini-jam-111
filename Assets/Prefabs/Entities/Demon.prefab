@@ -120,4 +120,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hitPoints: 5
   maxHitPoints: 5
-  damage: 2
+  damage: 3

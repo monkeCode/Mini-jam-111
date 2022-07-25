@@ -8,7 +8,7 @@ using Color = Dance.Color;
 
 public class Player : MonoBehaviour, IDamageable, IDancer
 {
-    private GameInput _input;
+    public GameInput input;
     private Dance.Color[] _colorSequence = new Dance.Color[8];
     [SerializeReference] private List<Ability> _abilities;
     [SerializeField] private int _hitPoints;
@@ -26,10 +26,10 @@ public class Player : MonoBehaviour, IDamageable, IDancer
             Instance = this;
         else
             Destroy(gameObject);
-        _input = new GameInput();
-        _input.Enable();
-        _input.Player.Move.performed += context => Move(context.ReadValue<Vector2>());
-        _input.Player.Sumbit.performed += context => UseAbility();
+        input = new GameInput();
+        input.Enable();
+        input.Player.Move.performed += context => Move(context.ReadValue<Vector2>());
+        input.Player.Sumbit.performed += context => UseAbility();
         _animator = GetComponent<Animator>();
     }
 
@@ -61,25 +61,12 @@ public class Player : MonoBehaviour, IDamageable, IDancer
 
     public void AddColor(Dance.Color color)
     {
-        // for (int i = 0; i < _colorSequence.Length; i++)
-        // {
-        //     if (_colorSequence[i] == Color.Null)
-        //     {
-        //         _colorSequence[i] = color;
-        //         return;
-        //     }
-        // }
-
         for (int i = _colorSequence.Length-1; i > 0; i--)
         {
             _colorSequence[i] = _colorSequence[i - 1];
         }
 
         _colorSequence[0] = color;
-        // foreach (var col in _colorSequence)
-        // {
-        //     Debug.Log(col);
-        // }
         UserInterface.Instance.UpdateSequence(_colorSequence);
     }
 
@@ -152,6 +139,7 @@ public class Player : MonoBehaviour, IDamageable, IDancer
 
     private void Die()
     {
+        UserInterface.Instance.ShowLosePanel();
     }
 
     public void CollectMoney(uint money)

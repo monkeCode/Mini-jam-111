@@ -42,6 +42,7 @@ public class Room : MonoBehaviour
     }
 
     private List<IFloorTile> _tiles = new();
+    public IReadOnlyList<IFloorTile> Tiles => _tiles;
     private IFloorTile[,] _logicalMap;
     private Vector2Int _offset;
     public Room[] Rooms = new Room[4];
@@ -242,5 +243,18 @@ public class Room : MonoBehaviour
         GameManager.Instance.ActiveRoom = Rooms[index];
         Rooms[index].gameObject.SetActive(true);
         transform.gameObject.SetActive(false);
+    }
+
+    public Vector2 RandomValidPosition()
+    {
+            var pos = Vector2.zero;
+        do
+        {
+            pos = new Vector2(Random.Range(0, _logicalMap.GetLength(1)), Random.Range(0, _logicalMap.GetLength(0)));
+            pos += _offset;
+        } while (GetFloorTile(pos) as DanceTile == null || 
+                 GetAllEntities().Count(entity => (Vector2)entity.transform.position == pos) != 0 ||
+                 pos == (Vector2)Player.Instance.transform.position);
+        return pos;
     }
 }

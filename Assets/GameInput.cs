@@ -114,6 +114,54 @@ public partial class @GameInput : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Menu"",
+            ""id"": ""b99fcf01-2855-4faa-8cb9-604e1132884a"",
+            ""actions"": [
+                {
+                    ""name"": ""Sequences"",
+                    ""type"": ""Button"",
+                    ""id"": ""983d1b6d-a883-4a1f-b96d-df671fa35456"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Pause"",
+                    ""type"": ""Button"",
+                    ""id"": ""485b1e33-b3e2-4d44-984f-79647f90d9aa"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""18531310-426e-4e0c-8a74-7ffd8e429012"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Sequences"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c56231fc-d790-41b5-96da-a9484afcab07"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -122,6 +170,10 @@ public partial class @GameInput : IInputActionCollection2, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Sumbit = m_Player.FindAction("Sumbit", throwIfNotFound: true);
+        // Menu
+        m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
+        m_Menu_Sequences = m_Menu.FindAction("Sequences", throwIfNotFound: true);
+        m_Menu_Pause = m_Menu.FindAction("Pause", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -218,9 +270,55 @@ public partial class @GameInput : IInputActionCollection2, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // Menu
+    private readonly InputActionMap m_Menu;
+    private IMenuActions m_MenuActionsCallbackInterface;
+    private readonly InputAction m_Menu_Sequences;
+    private readonly InputAction m_Menu_Pause;
+    public struct MenuActions
+    {
+        private @GameInput m_Wrapper;
+        public MenuActions(@GameInput wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Sequences => m_Wrapper.m_Menu_Sequences;
+        public InputAction @Pause => m_Wrapper.m_Menu_Pause;
+        public InputActionMap Get() { return m_Wrapper.m_Menu; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(MenuActions set) { return set.Get(); }
+        public void SetCallbacks(IMenuActions instance)
+        {
+            if (m_Wrapper.m_MenuActionsCallbackInterface != null)
+            {
+                @Sequences.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnSequences;
+                @Sequences.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnSequences;
+                @Sequences.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnSequences;
+                @Pause.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnPause;
+                @Pause.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnPause;
+                @Pause.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnPause;
+            }
+            m_Wrapper.m_MenuActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Sequences.started += instance.OnSequences;
+                @Sequences.performed += instance.OnSequences;
+                @Sequences.canceled += instance.OnSequences;
+                @Pause.started += instance.OnPause;
+                @Pause.performed += instance.OnPause;
+                @Pause.canceled += instance.OnPause;
+            }
+        }
+    }
+    public MenuActions @Menu => new MenuActions(this);
     public interface IPlayerActions
     {
         void OnMove(InputAction.CallbackContext context);
         void OnSumbit(InputAction.CallbackContext context);
+    }
+    public interface IMenuActions
+    {
+        void OnSequences(InputAction.CallbackContext context);
+        void OnPause(InputAction.CallbackContext context);
     }
 }

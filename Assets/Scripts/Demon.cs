@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class Demon : Entity
@@ -30,7 +31,8 @@ public class Demon : Entity
             }
             else
             {
-                transform.position = lastPlayerPos;
+                if(GameManager.Instance.ActiveRoom.GetAllEntities().Where(it => (Vector2)it.transform.position == lastPlayerPos).ToList().Count == 0)
+                    transform.position = lastPlayerPos;
             }
 
             IsAttack = false;
@@ -51,5 +53,13 @@ public class Demon : Entity
     public override void Attack()
     {
         Player.Instance.TakeDamage((uint) damage);
+    }
+    public override void TakeDamage(uint damage)
+    {
+        if (hitPoints > 0)
+            hitPoints -= (int)damage;
+        _animator.SetTrigger("TakeDamage");
+        if (hitPoints <= 0)
+            Die();
     }
 }

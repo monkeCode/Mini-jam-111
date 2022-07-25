@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3727303021908163521}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.682322, y: -1.8686078, z: 0.046426423}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -99,3 +99,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _color: 2
   _updateTurns: 5
+  _sprites:
+  - {fileID: 1007457359, guid: 578f39c74c29c174ca91e12e50e1baba, type: 3}
+  - {fileID: -156190390, guid: 578f39c74c29c174ca91e12e50e1baba, type: 3}
+  - {fileID: -988281964, guid: 578f39c74c29c174ca91e12e50e1baba, type: 3}
+  - {fileID: -607507328, guid: 578f39c74c29c174ca91e12e50e1baba, type: 3}
+  - {fileID: 588579350, guid: 578f39c74c29c174ca91e12e50e1baba, type: 3}
+  - {fileID: -1620578082, guid: 578f39c74c29c174ca91e12e50e1baba, type: 3}
+  - {fileID: -1284568956, guid: 578f39c74c29c174ca91e12e50e1baba, type: 3}
+  - {fileID: 1288254829, guid: 578f39c74c29c174ca91e12e50e1baba, type: 3}
+  _light: {fileID: 2212163797024618851, guid: e2bc8e51ab0889f44ab8e328e9d9b183, type: 3}

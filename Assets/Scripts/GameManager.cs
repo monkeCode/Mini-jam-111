@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -48,10 +49,12 @@ public class GameManager : MonoBehaviour
     }
 
     private bool _bossRoomExist = false;
+    private int countOfRooms = 1;
+
     public Room GenerateRoom()
     {
         Room room;
-        if (_bossRoomExist)
+        if (_bossRoomExist || countOfRooms <= 4)
         {
             room = _rooms[Random.Range(0, _rooms.Length)];
         }
@@ -59,13 +62,28 @@ public class GameManager : MonoBehaviour
         {
             room = Random.Range(1, 101) switch
             {
-                >=70 => _bossRoom,
+                >= 70 => _bossRoom,
                 _ => _rooms[Random.Range(0, _rooms.Length)]
             };
             if (room == _bossRoom)
                 _bossRoomExist = true;
         }
 
+        countOfRooms++;
         return Instantiate(room);
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
+    public void ToMenu()
+    {
+        SceneManager.LoadScene("Menu");
     }
 }
