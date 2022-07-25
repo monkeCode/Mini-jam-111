@@ -8,9 +8,13 @@ using Random = UnityEngine.Random;
 public class LootChest : MonoBehaviour, IFloorTile
 {
     [SerializeField] private List<Ability> _abilityList;
+    [SerializeField] private EventText _eventText;
+    [Header("Sprites")]
     [SerializeField] private Sprite _closeSprite;
     [SerializeField] private Sprite _openSprite;
+    [Header("Sounds")]
     [SerializeField] private Sprite _lootedSprite;
+    [SerializeField] private AudioClip _openSound;
     private bool isLooted;
     private SpriteRenderer _renderer;
     private void Start()
@@ -27,13 +31,9 @@ public class LootChest : MonoBehaviour, IFloorTile
             //heal
             var max = Player.Instance.MaxHitPoints;
             Player.Instance.Heal((uint) Random.Range( (float) (0.1* max), (float)(0.3*max)));
+            GameManager.Instance.Play(_openSound);
+            Instantiate(_eventText, transform.position, Quaternion.identity).Init("Healing");
         }
-        // else if(rand <=70)
-        // {
-        //     //add money
-        //     var money =Random.Range(10, 31);
-        //     Player.Instance.CollectMoney((uint) money);
-        // }
         else
         {
             //add ability
@@ -46,6 +46,8 @@ public class LootChest : MonoBehaviour, IFloorTile
             {
                var ability = unOppened[Random.Range(0, unOppened.Count)];
                Player.Instance.AddAbility(ability);
+               Instantiate(_eventText, transform.position, Quaternion.identity).Init("New Ability: " + ability.Name);
+               GameManager.Instance.Play(_openSound);
             }
         }
 

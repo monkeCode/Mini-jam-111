@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
-
+[RequireComponent(typeof(AudioSource))]
 public class Way : MonoBehaviour,IFloorTile
 {
+    private AudioSource _audioSource;
     public enum WayState
     {
         Open,
@@ -22,9 +24,12 @@ public class Way : MonoBehaviour,IFloorTile
     [SerializeField] private Transform _enterPosition;
     [SerializeField] private Sprite[] _doorSprite;
     public Vector2 EnterPonit => _enterPosition.position;
+    public WayState State => _wayState;
     private void Start()
     {
         GameManager.Instance.ActiveRoom.AddTile(this);
+        _audioSource = GetComponent<AudioSource>();
+        
     }
 
     public void OpenDoor()
@@ -50,12 +55,17 @@ public class Way : MonoBehaviour,IFloorTile
         if (_wayState == WayState.Open)
         {
             GameManager.Instance.ActiveRoom.Exit(this);
+            _audioSource.Play();
         }
     }
 
     public void BlockDoor()
     {
         _wayState = WayState.Blocked;
+    }
+    public void UnblockDoor()
+    {
+        _wayState = WayState.Close;
     }
     public bool CanStep => _wayState == WayState.Open;
     public void Step(Transform target)
@@ -68,5 +78,10 @@ public class Way : MonoBehaviour,IFloorTile
         
     }
 
+    public void SetBossRoom()
+    {
+        UnblockDoor();
+        _doorRenderer.color = Color.red;
+    }
     public Vector2 Position => transform.position;
 }

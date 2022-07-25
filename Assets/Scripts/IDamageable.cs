@@ -9,4 +9,5 @@ public interface IDamageable
     public void TakeDamage(uint damage);
     public void Heal(uint healp);
     public void Kill();
+    public void AddShield(Shield shield);
 }

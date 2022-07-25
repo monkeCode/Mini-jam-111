@@ -3,14 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
-
+[RequireComponent(typeof(AudioSource))]
 public class Entity : MonoBehaviour, IDamageable, ITurned
 {
   [SerializeField] protected int hitPoints;
   [SerializeField] protected int maxHitPoints;
   [SerializeField] protected int damage;
+  [SerializeField] protected AudioClip hitSound;
+  [SerializeField] protected Shield activeShield;
   public int HitPoints => hitPoints;
   public int MaxHitPoints => maxHitPoints;
+  protected AudioSource audioSource;
 
   public virtual void Heal(uint healp)
   {
@@ -21,7 +24,8 @@ public class Entity : MonoBehaviour, IDamageable, ITurned
 
 
   public virtual void TakeDamage(uint damage)
-    {
+  {
+      damage = activeShield.Defence(this,damage);
         if (hitPoints > 0)
             hitPoints -= (int)damage;
         if (hitPoints <= 0)
@@ -31,6 +35,7 @@ public class Entity : MonoBehaviour, IDamageable, ITurned
   protected virtual void Start()
   {
       GameManager.Instance.ActiveRoom.AddEntity(this);
+        audioSource = GetComponent<AudioSource>();
   }
 
   public void Kill()
@@ -38,7 +43,12 @@ public class Entity : MonoBehaviour, IDamageable, ITurned
         TakeDamage((uint)hitPoints);
     }
 
-    protected virtual void Die()
+  public virtual void AddShield(Shield shield)
+  {
+      activeShield = shield;
+  }
+
+  protected virtual void Die()
     {
         GameManager.Instance.ActiveRoom.RemoveEntity(this);
         Destroy(gameObject);
@@ -52,6 +62,7 @@ public class Entity : MonoBehaviour, IDamageable, ITurned
     public virtual void Attack()
     {
         Player.Instance.TakeDamage((uint) damage);
+        PlaySound(hitSound);
     }
     public virtual void Move()
     {
@@ -65,5 +76,10 @@ public class Entity : MonoBehaviour, IDamageable, ITurned
         {
             Attack();
         }
+    }
+    protected void PlaySound(AudioClip clip)
+    {
+        audioSource.clip = clip;
+        audioSource.Play();
     }
 }

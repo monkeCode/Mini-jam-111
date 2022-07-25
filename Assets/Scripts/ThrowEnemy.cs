@@ -7,6 +7,7 @@ public class ThrowEnemy : Entity
 {
     private Animator _animator;
     [SerializeField] GameObject _thowableObject;
+    [SerializeField] private int _lookDistance;
     private int _atkStack = 0;
     protected override void Start()
     {
@@ -20,12 +21,12 @@ public class ThrowEnemy : Entity
         var horizontalStack = GameManager.Instance.ActiveRoom.MoveToPos(transform.position, new Vector2(playerPos.x, transform.position.y));
         var verticalStack = GameManager.Instance.ActiveRoom.MoveToPos(transform.position, new Vector2(transform.position.x, playerPos.y));
         Vector2 nextMove = Vector2.zero;
-        if(horizontalStack == null && verticalStack == null)
+        if((horizontalStack == null && verticalStack == null) || _lookDistance > Math.Max(horizontalStack?.Count??0, verticalStack?.Count??0))
         {
             base.Move();
             return;
         }
-        else if(horizontalStack == null)
+        if(horizontalStack == null)
         {
             nextMove = verticalStack.Pop();
         }
@@ -62,7 +63,7 @@ public class ThrowEnemy : Entity
     }
     public override void Attack()
     {
-        if (_atkStack == 0)
+        if (_atkStack < 2)
         {
             _atkStack++;
             return;

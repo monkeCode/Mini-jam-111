@@ -46,10 +46,19 @@ public class Room : MonoBehaviour
     private IFloorTile[,] _logicalMap;
     private Vector2Int _offset;
     public Room[] Rooms = new Room[4];
-
+    private int? _bossWay = null;
     private void Start()
     {
         _ways.Close();
+        if(GameManager.Instance.CanGenerateBossRoom && Random.Range(0, 100) >= 70)
+        {
+            do
+            { 
+                _bossWay = Random.Range(0, 4);
+            } while (Rooms[_bossWay.Value] != null);
+            _ways.GetWays()[_bossWay.Value].SetBossRoom();
+            GameManager.Instance.bossRoomExist = true;
+        }
     }
 
     private void UpdateLogicalMap()
@@ -110,7 +119,7 @@ public class Room : MonoBehaviour
         for(int i = 0; i < _logicalMap.GetLength(0); i++)
         for(int j = 0; j < _logicalMap.GetLength(1); j++)
         {
-            matrix[i,j] = _logicalMap[i,j] != null?int.MaxValue : -1;
+            matrix[i,j] = (_logicalMap[i,j] != null && _logicalMap[i,j].CanStep)?int.MaxValue : -1;
         }
 
         foreach (var ent in _entities)
@@ -220,11 +229,17 @@ public class Room : MonoBehaviour
     public void Exit(Way way)
     {
         int index = (int) way.Dir;
-
+        
         if (Rooms[index] == null)
         {
-            Rooms[index] = GameManager.Instance.GenerateRoom();
-           
+            if (_bossWay == index)
+            {
+                Rooms[index] = GameManager.Instance.GenerateBossRoom();
+            }
+            else
+            {
+                Rooms[index] = GameManager.Instance.GenerateRoom();
+            }
             Rooms[index].Rooms[(index + 2) % 4] = this;
             for (int i = 0; i < 4; i++)
             {

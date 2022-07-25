@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sequence: 0200000002000000
   _name: Healing
-  heal: 5
+  heal: 3

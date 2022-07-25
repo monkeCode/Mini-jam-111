@@ -104,6 +104,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 27e1a721736b5224b944baa68f173136, type: 2}
   - {fileID: 11400000, guid: 61c25cd5f34f4db48bd66bfd70a08f3f, type: 2}
   - {fileID: 11400000, guid: 240a1ad03084486479e34c45e1dda05f, type: 2}
+  - {fileID: 11400000, guid: 6313a50c53916694ca7dda845283bc7b, type: 2}
+  _eventText: {fileID: 2559211066132684041, guid: cf18226512fa118428140a06d8fe9e82, type: 3}
   _closeSprite: {fileID: 1998970916, guid: 578f39c74c29c174ca91e12e50e1baba, type: 3}
   _openSprite: {fileID: 1069403022, guid: 578f39c74c29c174ca91e12e50e1baba, type: 3}
   _lootedSprite: {fileID: 2049059236, guid: 578f39c74c29c174ca91e12e50e1baba, type: 3}
+  _openSound: {fileID: 8300000, guid: 9642ae1a657232249a1c6dc32c3f3d56, type: 3}

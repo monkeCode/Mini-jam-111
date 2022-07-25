@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -19,7 +20,8 @@ public class GameManager : MonoBehaviour
     [SerializeField]private Room _activeRoom;
     [SerializeField] private Room _bossRoom;
     [SerializeField] private Room[] _rooms;
-
+    [SerializeField] private CinemachineVirtualCamera _camera;
+    private AudioSource _source;
     public Room ActiveRoom
     {
         get => _activeRoom;
@@ -29,48 +31,42 @@ public class GameManager : MonoBehaviour
         }
     }
     public static GameManager Instance { get; private set; }
-    
+
+    private void Start()
+    {
+        _noise = _camera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+    }
+
     void Awake()
     {
         if (Instance == null)
             Instance = this;
         else Destroy(gameObject);
         ActiveRoom = Instantiate(_startRoom);
+        _source = GetComponent<AudioSource>();
     }
     
-    void Update()
-    {
-        
-    }
 
     public void NextTurn()
     {
         ActiveRoom.UpdateMap();
     }
 
-    private bool _bossRoomExist = false;
+    public bool bossRoomExist = false;
     private int countOfRooms = 1;
-
+    private CinemachineBasicMultiChannelPerlin _noise;
+    public bool CanGenerateBossRoom => !bossRoomExist && countOfRooms >= 5;
     public Room GenerateRoom()
     {
-        Room room;
-        if (_bossRoomExist || countOfRooms <= 4)
-        {
-            room = _rooms[Random.Range(0, _rooms.Length)];
-        }
-        else
-        {
-            room = Random.Range(1, 101) switch
-            {
-                >= 70 => _bossRoom,
-                _ => _rooms[Random.Range(0, _rooms.Length)]
-            };
-            if (room == _bossRoom)
-                _bossRoomExist = true;
-        }
-
+        var room = _rooms[Random.Range(0, _rooms.Length)];
         countOfRooms++;
         return Instantiate(room);
+    }
+    public Room GenerateBossRoom()
+    {
+        bossRoomExist = true;
+        countOfRooms++;
+        return Instantiate(_bossRoom);
     }
 
     public void RestartGame()
@@ -85,5 +81,21 @@ public class GameManager : MonoBehaviour
     public void ToMenu()
     {
         SceneManager.LoadScene("Menu");
+    }
+    
+    public void Play(AudioClip clip)
+    {
+        _source.Stop();
+        _source.clip = clip;
+        _source.Play();
+    }
+
+    public IEnumerator ShakeCamera()
+    {
+        _noise.m_AmplitudeGain = 2;
+        _noise.m_FrequencyGain = 2;
+        yield return new WaitForSeconds(.2f);
+        _noise.m_AmplitudeGain = 0;
+        _noise.m_FrequencyGain = 0;
     }
 }

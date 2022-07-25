@@ -5,7 +5,7 @@ using System.Linq;
 using Dance;
 using UnityEngine;
 using Color = Dance.Color;
-
+[RequireComponent(typeof(AudioSource))]
 public class Player : MonoBehaviour, IDamageable, IDancer
 {
     public GameInput input;
@@ -15,9 +15,14 @@ public class Player : MonoBehaviour, IDamageable, IDancer
    [SerializeField] private int _maxHitPoints;
    [SerializeField] private int damage;
    [SerializeField] private Animator _healAnimator;
-   private Animator _animator;
+   [SerializeField] private AudioClip _hitSound;
+   [SerializeField] private AudioClip _abilitySound;
+   [SerializeField] private SpriteRenderer _shieldSprite;
+    private AudioSource _audioSource;
+    private Animator _animator;
     public int HitPoints => _hitPoints;
     public int MaxHitPoints => _maxHitPoints;
+    [SerializeField] private Shield _activeShield;
     public IReadOnlyList<Ability> Abilities => _abilities;
     public static Player Instance { get; private set; }
     void Start()
@@ -31,6 +36,7 @@ public class Player : MonoBehaviour, IDamageable, IDancer
         input.Player.Move.performed += context => Move(context.ReadValue<Vector2>());
         input.Player.Sumbit.performed += context => UseAbility();
         _animator = GetComponent<Animator>();
+        _audioSource = GetComponent<AudioSource>();
     }
 
     private void Move(Vector2 dir)
@@ -52,11 +58,15 @@ public class Player : MonoBehaviour, IDamageable, IDancer
             return;
         }
         GameManager.Instance.NextTurn();
+        if (_activeShield == null) return;
+        _activeShield.NextTurn();
+        _shieldSprite.enabled = _activeShield.Active;
     }
 
     private void Attack(Entity entity)
     {
         entity.TakeDamage((uint) damage);
+        PlaySound(_hitSound);
     }
 
     public void AddColor(Dance.Color color)
@@ -73,18 +83,22 @@ public class Player : MonoBehaviour, IDamageable, IDancer
     private void UseAbility()
     {
         using var sequences= _abilities.OrderByDescending(ab => ab.Sequence.Count).GetEnumerator();
+        bool used = false;
         while (sequences.MoveNext())
         {
             var index = FindSubArrayIndex(sequences.Current.Sequence);
             if (index != -1)
             {
                 sequences.Current.Use(this);
+                used = true;
                 for (int i = index; i < sequences.Current.Sequence.Count + index; i++)
                 {
                     _colorSequence[i] = Color.Null;
                 }
             }
         }
+        if(used)
+            PlaySound(_abilitySound);
         UserInterface.Instance.UpdateSequence(_colorSequence);
     }
 
@@ -126,12 +140,23 @@ public class Player : MonoBehaviour, IDamageable, IDancer
         TakeDamage((uint)_hitPoints);
     }
 
+    public void AddShield(Shield shield)
+    {
+        _activeShield = shield;
+        _shieldSprite.enabled = true;
+        _shieldSprite.color = _activeShield.Color;
+    }
+
 
     public void TakeDamage(uint damage)
     {
+        if (_activeShield != null)
+            damage = _activeShield.Defence(this,damage);
         if (_hitPoints > 0)
             _hitPoints -= (int)damage;
         _animator.SetTrigger("TakeDamage");
+       StartCoroutine(GameManager.Instance.ShakeCamera());
+
         UserInterface.Instance.UpdateHpBar();
         if (_hitPoints <= 0)
             Die();
@@ -146,4 +171,11 @@ public class Player : MonoBehaviour, IDamageable, IDancer
     {
         //TODO:collect money
     }
+
+    public void PlaySound(AudioClip clip)
+    {
+        _audioSource.clip = clip;
+        _audioSource.Play();
+    }
+    
 }

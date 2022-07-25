@@ -53,6 +53,7 @@ public class Demon : Entity
     public override void Attack()
     {
         Player.Instance.TakeDamage((uint) damage);
+        PlaySound(hitSound);
     }
     public override void TakeDamage(uint damage)
     {

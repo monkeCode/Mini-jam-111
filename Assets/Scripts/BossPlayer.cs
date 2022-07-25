@@ -8,11 +8,15 @@ public class BossPlayer : Entity, IDancer
 {
     [SerializeField] private List<Ability> _abilities;
     [SerializeField] private Animator _abilityAnimator;
+    [SerializeField] private AudioClip _healSound;
+    [SerializeField] private AudioClip _abilitySound;
+    [SerializeField] private SpriteRenderer _shieldRenderer;
     private Animator _animator;
+    private int _turn;
     protected override void Start()
     {
         base.Start();
-        maxHitPoints = Player.Instance.MaxHitPoints;
+        maxHitPoints = (int)(Player.Instance.MaxHitPoints*1.5f);
         hitPoints = maxHitPoints;
         _abilities = Player.Instance.Abilities.ToList();
         _animator = GetComponent<Animator>();
@@ -25,12 +29,25 @@ public class BossPlayer : Entity, IDancer
 
     public override void NextTurn()
     {
-        var random = Random.Range(1, 101);
-        if (random <= 10)
+        if (activeShield != null)
         {
+            activeShield.NextTurn();
+            _shieldRenderer.enabled = activeShield.Active;
+        }
+
+        if (_turn == 1)
+        {
+            _turn = 0;
             return;
         }
-        else if (random <= 80)
+
+        _turn++;
+        var random = Random.Range(1, 101);
+        // if (random <= 10)
+        // {
+        //     return;
+        // }
+        if (random <= 70)
         {
             Move();
         }
@@ -52,6 +69,8 @@ public class BossPlayer : Entity, IDancer
     }
     public override void TakeDamage(uint damage)
     {
+        if (activeShield != null)
+            damage = activeShield.Defence(this,damage);
         if (hitPoints > 0)
             hitPoints -= (int)damage;
         _animator.SetTrigger("TakeDamage");
@@ -62,11 +81,18 @@ public class BossPlayer : Entity, IDancer
     {
         var random = Random.Range(0, _abilities.Count);
         _abilities[random].Use(this);
+        PlaySound(_abilitySound);
     }
 
     protected override void Die()
     {
         base.Die();
         UserInterface.Instance.ShowWinPanel();
+    }
+    public override void AddShield(Shield shield)
+    {
+        activeShield = shield;
+        _shieldRenderer.enabled = activeShield.Active;
+        _shieldRenderer.color = activeShield.Color;
     }
 }
