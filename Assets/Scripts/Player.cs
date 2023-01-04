@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Dance;
 using UnityEngine;
 using Color = Dance.Color;
 [RequireComponent(typeof(AudioSource))]
@@ -20,12 +18,25 @@ public class Player : MonoBehaviour, IDamageable, IDancer
    [SerializeField] private SpriteRenderer _shieldSprite;
     private AudioSource _audioSource;
     private Animator _animator;
+    public event Action<int> CoinsChanged; 
+    private int _coins;
+    public int Coins
+    {
+        get => _coins;
+        set
+        {
+            _coins = _coins + value < 0 ? 0 : value;
+            CoinsChanged?.Invoke(_coins);
+        }
+    }
+    
     public int HitPoints => _hitPoints;
     public int MaxHitPoints => _maxHitPoints;
     [SerializeField] private Shield _activeShield;
     public IReadOnlyList<Ability> Abilities => _abilities;
     public static Player Instance { get; private set; }
-    void Start()
+
+    public void Awake()
     {
         if (Instance == null)
             Instance = this;
@@ -126,9 +137,9 @@ public class Player : MonoBehaviour, IDamageable, IDancer
         _abilities.Add(ability);
     }
 
-    public void Heal(uint healp)
+    public void Heal(uint heal)
     {
-        _hitPoints += (int)healp;
+        _hitPoints += (int)heal;
         if (_hitPoints > _maxHitPoints)
             _hitPoints = _maxHitPoints;
         UserInterface.Instance.UpdateHpBar();
@@ -167,12 +178,7 @@ public class Player : MonoBehaviour, IDamageable, IDancer
         UserInterface.Instance.ShowLosePanel();
     }
 
-    public void CollectMoney(uint money)
-    {
-        //TODO:collect money
-    }
-
-    public void PlaySound(AudioClip clip)
+    private void PlaySound(AudioClip clip)
     {
         _audioSource.clip = clip;
         _audioSource.Play();

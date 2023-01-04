@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sequence: 0200000002000000
   _name: Healing
+  _cost: 20
   heal: 3

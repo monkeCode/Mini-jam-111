@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sequence: 010000000200000003000000
   _name: Shuffle floor
+  _cost: 7

@@ -10,6 +10,13 @@ using Random = UnityEngine.Random;
 
 public class Room : MonoBehaviour
 {
+    public enum RoomType
+    {
+        NoRoom,
+        Simple,
+        Boss,
+        Shop
+    }
     private List<ITurned> _entities = new();
     [SerializeField] private Ways _ways;
     [Serializable]
@@ -45,22 +52,33 @@ public class Room : MonoBehaviour
     public IReadOnlyList<IFloorTile> Tiles => _tiles;
     private IFloorTile[,] _logicalMap;
     private Vector2Int _offset;
-    public Room[] Rooms = new Room[4];
     private int? _bossWay = null;
+    private int? shopWay = null;
+    public Vector2Int Pos;
     private void Start()
     {
         _ways.Close();
-        if(GameManager.Instance.CanGenerateBossRoom && Random.Range(0, 100) >= 70)
-        {
-            do
-            { 
-                _bossWay = Random.Range(0, 4);
-            } while (Rooms[_bossWay.Value] != null);
-            _ways.GetWays()[_bossWay.Value].SetBossRoom();
-            GameManager.Instance.bossRoomExist = true;
-        }
     }
 
+    public void SetDoors(Vector2Int pos,RoomType[] doors)
+    {
+        Pos = pos;
+        for(int i = 0; i < doors.Length; i++)
+        {
+            if(doors[i] ==RoomType.NoRoom)
+                _ways.GetWays()[i].BlockDoor();
+            if (doors[i] == RoomType.Boss)
+            {
+                _bossWay = i;
+                _ways.GetWays()[i].gameObject.GetComponent<SpriteRenderer>().color = Color.red;
+            }
+            if (doors[i] == RoomType.Shop)
+            {
+                shopWay = i;
+            }
+        }
+    }
+    
     private void UpdateLogicalMap()
     {
         var minVector = new Vector2Int((int) _tiles.Min(tile => tile.Position.x), 
@@ -79,7 +97,6 @@ public class Room : MonoBehaviour
             string s = "";
             for (int j = 0; j < matrix.GetLength(1); j++)
                 s += matrix[i, j] != null? "1 ":"0 ";
-            Debug.Log(s);
         }
 
         _offset = minVector;
@@ -229,34 +246,30 @@ public class Room : MonoBehaviour
     public void Exit(Way way)
     {
         int index = (int) way.Dir;
-        
-        if (Rooms[index] == null)
+        Room room = null;
+        if (index == 0)
         {
-            if (_bossWay == index)
-            {
-                Rooms[index] = GameManager.Instance.GenerateBossRoom();
-            }
-            else
-            {
-                Rooms[index] = GameManager.Instance.GenerateRoom();
-            }
-            Rooms[index].Rooms[(index + 2) % 4] = this;
-            for (int i = 0; i < 4; i++)
-            {
-                if (i != (index + 2) % 4)
-                {
-                    if(Random.Range(0,2) ==1)
-                        Rooms[index]._ways.GetWays()[i].BlockDoor();
-                }
-            }
+            room = GameManager.Instance.GetRoomAtPos(Pos+Vector2Int.left);
+        } 
+        if (index == 1)
+        {
+            room = GameManager.Instance.GetRoomAtPos(Pos-Vector2Int.up);
         }
-
+        if (index == 2)
+        {
+            room = GameManager.Instance.GetRoomAtPos(Pos+Vector2Int.right);
+        }
+        if (index == 3)
+        {
+            room = GameManager.Instance.GetRoomAtPos(Pos-Vector2Int.down);
+        }
+        
         Vector2 pos = Vector2.zero;
-        pos = Rooms[index]._ways.GetWays()[(index + 2) % 4].EnterPonit;
+        pos = room._ways.GetWays()[(index + 2) % 4].EnterPonit;
         
         Player.Instance.transform.position = pos;
-        GameManager.Instance.ActiveRoom = Rooms[index];
-        Rooms[index].gameObject.SetActive(true);
+        GameManager.Instance.ActiveRoom = room;
+        room.gameObject.SetActive(true);
         transform.gameObject.SetActive(false);
     }
 

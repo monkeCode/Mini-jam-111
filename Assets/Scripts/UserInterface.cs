@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,8 +17,15 @@ public class UserInterface : MonoBehaviour
     [SerializeField] private GameObject _pausePanel;
     [SerializeField] private GameObject _losePanel;
     [SerializeField] private GameObject _winPanel;
+    [SerializeField] private TextMeshProUGUI _coinsText;
     private bool _showSequence = false;
     private bool _showPause = false;
+    
+    private void OnDestroy()
+    {
+        Player.Instance.CoinsChanged -= UpdateCoins;
+    }
+
     void Start()
     {
         if (Instance == null)
@@ -29,6 +37,7 @@ public class UserInterface : MonoBehaviour
 
         Player.Instance.input.Menu.Sequences.performed += context => LookSequences();
         Player.Instance.input.Menu.Pause.performed += context => ShowPausePanel();
+        Player.Instance.CoinsChanged += UpdateCoins;
     }
 
     public void UpdateHpBar()
@@ -101,5 +110,23 @@ public class UserInterface : MonoBehaviour
         _losePanel.SetActive(true);
         Player.Instance.input.Player.Disable();
         Player.Instance.input.Menu.Disable();
+    }
+
+    private void UpdateCoins(int newCoinsValue)
+    {
+        StopAllCoroutines();
+        StartCoroutine(CoinsUpdater(newCoinsValue));
+    }
+
+    IEnumerator CoinsUpdater(int coins)
+    {
+        for (var value = int.Parse(_coinsText.text); value != coins; value = int.Parse(_coinsText.text))
+        {
+            if (coins == value) yield break;
+            value += value > coins ? -1 : 1;
+            _coinsText.text = value.ToString();
+            yield return new WaitForSeconds(0.05f);
+        }
+
     }
 }

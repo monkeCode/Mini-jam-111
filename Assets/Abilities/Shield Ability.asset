@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sequence: 050000000400000002000000
   _name: Immunity
+  _cost: 20
   _shield: {fileID: 11400000, guid: 9b0555c2da8f21c4e8f65eb964605a67, type: 2}
