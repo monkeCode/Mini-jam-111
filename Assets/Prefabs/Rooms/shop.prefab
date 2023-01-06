@@ -830,17 +830,13 @@ MonoBehaviour:
     Right: {fileID: 4211084987702261069}
     Top: {fileID: 6363153730517546125}
     Bottom: {fileID: 7263759825525918073}
-  Rooms:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  Pos: {x: 0, y: 0}
   _shopTiles:
   - {fileID: 8888384254801697095}
   - {fileID: 2645277988595100530}
   - {fileID: 4300606024179820348}
   - {fileID: 7492421753083463056}
-  _sellableItems:
+  _sellableSpells:
   - {fileID: 11400000, guid: ce43dcdae1cf4044e90dc8444a3d6150, type: 2}
   - {fileID: 11400000, guid: e961c975878a5f547be45156b19760ee, type: 2}
   - {fileID: 11400000, guid: bec52c2f8154a1543b0b987ed56f209e, type: 2}
@@ -848,6 +844,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6313a50c53916694ca7dda845283bc7b, type: 2}
   - {fileID: 11400000, guid: 61c25cd5f34f4db48bd66bfd70a08f3f, type: 2}
   - {fileID: 11400000, guid: 240a1ad03084486479e34c45e1dda05f, type: 2}
+  _sellableItems:
+  - {fileID: 11400000, guid: 3ee6867e9dc54384bad5681d8429b445, type: 2}
 --- !u!1 &3674097923473515532
 GameObject:
   m_ObjectHideFlags: 0

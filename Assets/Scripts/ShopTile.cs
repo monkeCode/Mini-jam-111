@@ -17,7 +17,7 @@ public class ShopTile : MonoBehaviour, IFloorTile
     
     public void Step(Transform target)
     {
-        if(_isSold) return;
+        if(_isSold || _item == null) return;
         var player = target.GetComponent<Player>();
         if(player == null) return;
         _item.Buy(player);
@@ -35,7 +35,18 @@ public class ShopTile : MonoBehaviour, IFloorTile
     public void SetItem(ISellableItem item)
     {
         _item = item;
+        if (_item == null)
+        {
+            _itemPresenter.gameObject.SetActive(false);
+            _text.text = "";
+            return;
+        }
         _cost = (int) (Random.Range(0.9f, 1.1f) * _item.Cost);
         _text.text = _item + $"\nCost:{_cost}";
+    }
+
+    public void SetIcon(Sprite sprite)
+    {
+        _itemPresenter.GetComponent<SpriteRenderer>().sprite = sprite;
     }
 }

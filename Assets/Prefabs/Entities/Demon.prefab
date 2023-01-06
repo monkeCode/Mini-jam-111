@@ -122,8 +122,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hitPoints: 5
   maxHitPoints: 5
-  damage: 3
+  damage: 5
   hitSound: {fileID: 8300000, guid: da755ab53d0ed5e47a0a4b9d40a1d957, type: 3}
+  activeShield: {fileID: 0}
 --- !u!114 &-913682252484025801
 MonoBehaviour:
   m_ObjectHideFlags: 0

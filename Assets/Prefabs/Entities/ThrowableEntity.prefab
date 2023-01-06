@@ -122,8 +122,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hitPoints: 3
   maxHitPoints: 3
-  damage: 3
+  damage: 4
   hitSound: {fileID: 8300000, guid: da755ab53d0ed5e47a0a4b9d40a1d957, type: 3}
+  activeShield: {fileID: 0}
   _thowableObject: {fileID: 1213976862105958290, guid: 116e9402595d3344d94833a49ae278ed, type: 3}
   _lookDistance: 5
 --- !u!114 &-5281808435922605350

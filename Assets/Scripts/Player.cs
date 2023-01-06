@@ -6,20 +6,54 @@ using Color = Dance.Color;
 [RequireComponent(typeof(AudioSource))]
 public class Player : MonoBehaviour, IDamageable, IDancer
 {
+    [Serializable]
+    public struct Stats
+    {
+        public int Damage;
+        public int Health;
+        public int MaxHealth;
+        public int Resist;
+        
+        public static Stats operator+(Stats a, Stats b)
+        {
+            return new Stats
+            {
+                Damage = a.Damage + b.Damage,
+                Health = a.Health + b.Health,
+                MaxHealth = a.MaxHealth + b.MaxHealth,
+                Resist = a.Resist + b.Resist
+            };
+        }
+        public static Stats operator-(Stats a, Stats b)
+        {
+            return new Stats
+            {
+                Damage = a.Damage - b.Damage,
+                Health = a.Health - b.Health,
+                MaxHealth = a.MaxHealth - b.MaxHealth,
+                Resist = a.Resist - b.Resist
+            };
+        }
+    }
+    
+    
     public GameInput input;
     private Dance.Color[] _colorSequence = new Dance.Color[8];
     [SerializeReference] private List<Ability> _abilities;
-    [SerializeField] private int _hitPoints;
-   [SerializeField] private int _maxHitPoints;
-   [SerializeField] private int damage;
-   [SerializeField] private Animator _healAnimator;
-   [SerializeField] private AudioClip _hitSound;
-   [SerializeField] private AudioClip _abilitySound;
-   [SerializeField] private SpriteRenderer _shieldSprite;
+    [SerializeField] private Stats _stats;
+    [SerializeField] private Animator _healAnimator;
+    [SerializeField] private AudioClip _hitSound;
+    [SerializeField] private AudioClip _abilitySound;
+    [SerializeField] private SpriteRenderer _shieldSprite;
+
     private AudioSource _audioSource;
     private Animator _animator;
-    public event Action<int> CoinsChanged; 
+    private PlayerInventory _inventory;
+    public PlayerInventory Inventory => _inventory;
     private int _coins;
+    public event Action<int> CoinsChanged;
+    public event Action<int> HpChanged;
+
     public int Coins
     {
         get => _coins;
@@ -29,9 +63,26 @@ public class Player : MonoBehaviour, IDamageable, IDancer
             CoinsChanged?.Invoke(_coins);
         }
     }
-    
-    public int HitPoints => _hitPoints;
-    public int MaxHitPoints => _maxHitPoints;
+
+    public int HitPoints
+    {
+        get => _stats.Health;
+        set
+        {
+            _stats.Health = value;
+            
+            if(_stats.Health > _stats.MaxHealth)
+                _stats.Health = _stats.MaxHealth;
+            if(_stats.Health < 0)
+                _stats.Health = 0;
+            HpChanged?.Invoke(_stats.Health);
+            if (_stats.Health <= 0)
+            {
+                Die();
+            }
+        }
+    }
+    public int MaxHitPoints => _stats.MaxHealth;
     [SerializeField] private Shield _activeShield;
     public IReadOnlyList<Ability> Abilities => _abilities;
     public static Player Instance { get; private set; }
@@ -48,6 +99,11 @@ public class Player : MonoBehaviour, IDamageable, IDancer
         input.Player.Sumbit.performed += context => UseAbility();
         _animator = GetComponent<Animator>();
         _audioSource = GetComponent<AudioSource>();
+    }
+
+    private void Start()
+    {
+        _inventory = new PlayerInventory();
     }
 
     private void Move(Vector2 dir)
@@ -76,7 +132,7 @@ public class Player : MonoBehaviour, IDamageable, IDancer
 
     private void Attack(Entity entity)
     {
-        entity.TakeDamage((uint) damage);
+        entity.TakeDamage((uint) _stats.Damage);
         PlaySound(_hitSound);
     }
 
@@ -139,16 +195,13 @@ public class Player : MonoBehaviour, IDamageable, IDancer
 
     public void Heal(uint heal)
     {
-        _hitPoints += (int)heal;
-        if (_hitPoints > _maxHitPoints)
-            _hitPoints = _maxHitPoints;
-        UserInterface.Instance.UpdateHpBar();
+        HitPoints += (int) heal;
         _healAnimator.SetTrigger("Heal");
     }
 
     public void Kill()
     {
-        TakeDamage((uint)_hitPoints);
+        HitPoints = 0;
     }
 
     public void AddShield(Shield shield)
@@ -158,19 +211,25 @@ public class Player : MonoBehaviour, IDamageable, IDancer
         _shieldSprite.color = _activeShield.Color;
     }
 
-
+    public void EquipItem(Item item)
+    {
+       _stats = _inventory.Equip(item, _stats);
+       UserInterface.Instance.UpdateStats();
+    }
+    public void UnequipItem(Item item)
+    {
+        _stats = _inventory.Unequip(item, _stats);
+        UserInterface.Instance.UpdateStats();
+    }
     public void TakeDamage(uint damage)
     {
         if (_activeShield != null)
             damage = _activeShield.Defence(this,damage);
-        if (_hitPoints > 0)
-            _hitPoints -= (int)damage;
+        damage-= (uint)_stats.Resist;
+        if (HitPoints > 0)
+            HitPoints -= (int)damage;
         _animator.SetTrigger("TakeDamage");
-       StartCoroutine(GameManager.Instance.ShakeCamera());
-
-        UserInterface.Instance.UpdateHpBar();
-        if (_hitPoints <= 0)
-            Die();
+        StartCoroutine(GameManager.Instance.ShakeCamera());
     }
 
     private void Die()

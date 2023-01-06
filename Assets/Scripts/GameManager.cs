@@ -23,6 +23,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Room _shopRoom;
     [SerializeField] private Room[] _rooms;
     [SerializeField] private CinemachineVirtualCamera _camera;
+    
+    [Header("Items and Spells")]
+    [SerializeField] private List<Item> _items;
+    [SerializeField] private List<Ability> _spells;
      private Room.RoomType[,] _map;
      private List<Room> _roomList;
     private AudioSource _source;
@@ -57,7 +61,21 @@ public class GameManager : MonoBehaviour
         _source = GetComponent<AudioSource>();
     }
     
-
+    public Item GetRandomItem()
+    {
+        if(_items.Count == 0) return null;
+        var it = _items[Random.Range(0, _items.Count)];
+        _items.Remove(it);
+        return it;
+    }
+    public Ability GetRandomSpell()
+    {
+        if(_spells.Count == 0) return null;
+        var it = _spells[Random.Range(0, _spells.Count)];
+        _spells.Remove(it);
+        return it;
+    }
+    
     public void NextTurn()
     {
         ActiveRoom.UpdateMap();

@@ -17,16 +17,17 @@ public class UserInterface : MonoBehaviour
     [SerializeField] private GameObject _pausePanel;
     [SerializeField] private GameObject _losePanel;
     [SerializeField] private GameObject _winPanel;
+    [SerializeField] private GameObject _inventoryPanel;
     [SerializeField] private TextMeshProUGUI _coinsText;
-    private bool _showSequence = false;
-    private bool _showPause = false;
-    
+    private bool _showSequence;
+    private bool _showPause;
+
     private void OnDestroy()
     {
         Player.Instance.CoinsChanged -= UpdateCoins;
     }
 
-    void Start()
+    private void Awake()
     {
         if (Instance == null)
             Instance = this;
@@ -34,16 +35,21 @@ public class UserInterface : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
-        Player.Instance.input.Menu.Sequences.performed += context => LookSequences();
-        Player.Instance.input.Menu.Pause.performed += context => ShowPausePanel();
-        Player.Instance.CoinsChanged += UpdateCoins;
     }
 
-    public void UpdateHpBar()
+    void Start()
     {
-      var hp = (float)Player.Instance.HitPoints / Player.Instance.MaxHitPoints;
-      _hpBar.value = hp;
+        Player.Instance.input.Menu.Sequences.performed += context => LookSequences();
+        Player.Instance.input.Menu.Pause.performed += context => ShowPausePanel();
+        Player.Instance.input.Menu.Inventory.performed += context => ShowInventory();
+        Player.Instance.CoinsChanged += UpdateCoins;
+        Player.Instance.HpChanged += UpdateHpBar;
+    }
+
+    public void UpdateHpBar(int hitPoints)
+    {
+        var hp = (float)hitPoints / Player.Instance.MaxHitPoints;
+        _hpBar.value = hp;
     }
 
     public void UpdateSequence(Dance.Color[] colors)
@@ -54,10 +60,11 @@ public class UserInterface : MonoBehaviour
         }
     }
 
-    private List<GameObject> _sequenceObjects = new List<GameObject>();
+    private List<GameObject> _sequenceObjects = new();
 
     private void LookSequences()
     {
+        _inventoryPanel.SetActive(false);
         if(_showSequence)
         {
             _sequenceBase.SetActive(false);
@@ -99,6 +106,20 @@ public class UserInterface : MonoBehaviour
         }
     }
 
+    public void ShowInventory()
+    {
+        _sequenceBase.SetActive(false);
+        _showSequence = false;
+        foreach (var it in _sequenceObjects)
+        {
+            Destroy(it);
+        }
+        _sequenceObjects.Clear();
+        
+        _inventoryPanel.SetActive(!_inventoryPanel.activeSelf);
+        if(_inventoryPanel.activeSelf)
+            _inventoryPanel.GetComponent<EquipMenu>().UpdateItems();
+    }
     public void ShowWinPanel()
     {
         _winPanel.SetActive(true);
@@ -128,5 +149,10 @@ public class UserInterface : MonoBehaviour
             yield return new WaitForSeconds(0.05f);
         }
 
+    }
+
+    public void UpdateStats()
+    {
+        UpdateHpBar(Player.Instance.HitPoints);
     }
 }

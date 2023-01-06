@@ -7,7 +7,6 @@ using Random = UnityEngine.Random;
 [RequireComponent(typeof(SpriteRenderer))]
 public class LootChest : MonoBehaviour, IFloorTile
 {
-    [SerializeField] private List<Ability> _abilityList;
     [SerializeField] private EventText _eventText;
     [SerializeField] private ParticleSystem _moneyParticle;
     [Header("Sprites")]
@@ -53,15 +52,14 @@ public class LootChest : MonoBehaviour, IFloorTile
         else
         {
             //add ability
-            var unOpened = _abilityList.Except(Player.Instance.Abilities).ToList();
-            if ( unOpened.Count == 0)
+            var spell = GameManager.Instance.GetRandomSpell();
+            if ( spell is null)
             { 
                 Open();
                 return;
             }
-            var ability = unOpened[Random.Range(0, unOpened.Count)];
-            Player.Instance.AddAbility(Instantiate(ability));
-            Instantiate(_eventText, transform.position, Quaternion.identity).Init("New Ability: " + ability.Name);
+            Player.Instance.AddAbility(Instantiate(spell));
+            Instantiate(_eventText, transform.position, Quaternion.identity).Init("New Ability: " + spell.Name);
                
         }
         GameManager.Instance.Play(_openSound);

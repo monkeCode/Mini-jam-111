@@ -18,8 +18,14 @@ public abstract class Ability : ScriptableObject, ISellableItem
         player.AddAbility(Instantiate(this));
     }
     
-    public static bool operator==([NotNull] Ability first, [NotNull] Ability second)
+    public static bool operator==(Ability first, Ability second)
     {
+        if (first is null || second is null)
+        {
+            if(first is null && second is null)
+                return true;
+            return false;
+        }
         return first._name == second._name;
     }
 
