@@ -98,7 +98,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _color: 2
-  _updateTurns: 5
+  _updateTurns: 10
   _sprites:
   - {fileID: 1007457359, guid: 578f39c74c29c174ca91e12e50e1baba, type: 3}
   - {fileID: -156190390, guid: 578f39c74c29c174ca91e12e50e1baba, type: 3}

@@ -25,6 +25,7 @@ public class ShopTile : MonoBehaviour, IFloorTile
         _isSold = true;
         _itemPresenter.gameObject.SetActive(false);
         _text.text = "Sold";
+        GetComponent<AudioSource>().Play();
     }
 
     public void NextTurn()

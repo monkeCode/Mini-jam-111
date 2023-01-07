@@ -1,21 +1,35 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
 public class Throwable : MonoBehaviour
 {
     [SerializeField] private float _moveTime;
-    [SerializeField] private float _rotateTime;
+    [SerializeField] private float _rotateSpeed;
     private Tween _moveTween;
     private Tween _rotateTween;
-    void Start()
+    [SerializeField] private Transform _target;
+    [SerializeField] private uint damage;
+   
+    
+    public void Init(int damage, Transform target)
     {
-       _moveTween = transform.DOMove(Player.Instance.transform.position, _moveTime).OnComplete(() => Destroy(gameObject));
-       _rotateTween = transform.DORotate(new Vector3(0, 0, 359), _rotateTime).SetSpeedBased();
+        _target = target;
+        this.damage = (uint)damage;
+        _moveTween = transform.DOMove(_target.position, _moveTime).OnComplete(OnComplete);
     }
 
+    private void Update()
+    {
+        transform.Rotate(Vector3.forward, _rotateSpeed * Time.deltaTime);
+    }
+
+    private void OnComplete()
+    {
+        _target.GetComponent<IDamageable>()?.TakeDamage(damage);
+        Destroy(gameObject);
+    }
+    
     private void OnDestroy()
     {
         _moveTween.Kill();

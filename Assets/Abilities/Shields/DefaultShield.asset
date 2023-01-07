@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cf5bfb368caafe48803b79aafbea096, type: 3}
   m_Name: DefaultShield
   m_EditorClassIdentifier: 
-  _turns: 3
+  _turns: 5
   _color: {r: 0.3443396, g: 0.7277303, b: 1, a: 1}

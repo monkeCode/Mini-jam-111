@@ -70,8 +70,8 @@ public class ThrowEnemy : Entity
         }
 
         _atkStack = 0;
-        Instantiate(_thowableObject, transform.position, Quaternion.identity);
-        Player.Instance.TakeDamage((uint) damage);
+        Instantiate(_thowableObject, transform.position, Quaternion.identity).GetComponent<Throwable>()
+            .Init(damage,Player.Instance.transform);
     }
     
     public override void TakeDamage(uint damage)

@@ -98,4 +98,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _moveTime: 0.5
-  _rotateTime: 1
+  _rotateSpeed: 600
+  _target: {fileID: 0}
+  damage: 0
