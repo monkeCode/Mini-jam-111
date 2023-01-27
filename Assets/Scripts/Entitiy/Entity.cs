@@ -23,14 +23,14 @@ public class Entity : MonoBehaviour, IDamageable, ITurned
   }
 
 
-  public virtual void TakeDamage(uint damage)
+  public virtual void TakeDamage(uint damage, IDamageable source = null)
   {
       damage = activeShield.Defence(this,damage);
         if (hitPoints > 0)
             hitPoints -= (int)damage;
         if (hitPoints <= 0)
             Die();
-    }
+  }
 
   protected virtual void Start()
   {
@@ -61,7 +61,7 @@ public class Entity : MonoBehaviour, IDamageable, ITurned
 
     public virtual void Attack()
     {
-        Player.Instance.TakeDamage((uint) damage);
+        Player.Instance.TakeDamage((uint) damage, this);
         PlaySound(hitSound);
     }
     public virtual void Move()

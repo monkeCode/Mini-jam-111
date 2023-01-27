@@ -74,7 +74,7 @@ public class ThrowEnemy : Entity
             .Init(damage,Player.Instance.transform);
     }
     
-    public override void TakeDamage(uint damage)
+    public override void TakeDamage(uint damage, IDamageable source = null)
     {
         if (hitPoints > 0)
             hitPoints -= (int)damage;

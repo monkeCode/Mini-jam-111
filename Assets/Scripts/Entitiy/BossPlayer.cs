@@ -43,10 +43,6 @@ public class BossPlayer : Entity, IDancer
 
         _turn++;
         var random = Random.Range(1, 101);
-        // if (random <= 10)
-        // {
-        //     return;
-        // }
         if (random <= 70)
         {
             Move();
@@ -67,7 +63,7 @@ public class BossPlayer : Entity, IDancer
         base.Heal(healp);
         _abilityAnimator.SetTrigger("Heal");
     }
-    public override void TakeDamage(uint damage)
+    public override void TakeDamage(uint damage, IDamageable source = null)
     {
         if (activeShield != null)
             damage = activeShield.Defence(this,damage);

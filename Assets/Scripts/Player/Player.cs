@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using Color = Dance.Color;
 [RequireComponent(typeof(AudioSource))]
-public class Player : MonoBehaviour, IDamageable, IDancer
+public class Player : MonoBehaviour, IDamageable, IDancer, IEntityObservable
 {
     [Serializable]
     public struct Stats
@@ -119,6 +119,7 @@ public class Player : MonoBehaviour, IDamageable, IDancer
         {
             transform.position += (Vector3)dir;
             tile.Step(transform);
+            Moved?.Invoke((int) transform.position.x, (int) transform.position.y);
         }
         else
         {
@@ -133,6 +134,7 @@ public class Player : MonoBehaviour, IDamageable, IDancer
     private void Attack(Entity entity)
     {
         entity.TakeDamage((uint) _stats.Damage);
+        Attacked?.Invoke(entity, _stats.Damage);
         PlaySound(_hitSound);
     }
 
@@ -196,6 +198,7 @@ public class Player : MonoBehaviour, IDamageable, IDancer
     public void Heal(uint heal)
     {
         HitPoints += (int) heal;
+        Healed?.Invoke((int) heal);
         _healAnimator.SetTrigger("Heal");
     }
 
@@ -216,16 +219,19 @@ public class Player : MonoBehaviour, IDamageable, IDancer
        _stats = _inventory.Equip(item, _stats);
        UserInterface.Instance.UpdateStats();
     }
+    
     public void UnequipItem(Item item)
     {
         _stats = _inventory.Unequip(item, _stats);
         UserInterface.Instance.UpdateStats();
     }
-    public void TakeDamage(uint damage)
+    
+    public void TakeDamage(uint damage, IDamageable source = null)
     {
         if (_activeShield != null)
             damage = _activeShield.Defence(this,damage);
         damage-= (uint)_stats.Resist;
+        TakedDamage?.Invoke(source,(int) damage);
         if (HitPoints > 0)
             HitPoints -= (int)damage;
         _animator.SetTrigger("TakeDamage");
@@ -234,7 +240,9 @@ public class Player : MonoBehaviour, IDamageable, IDancer
 
     private void Die()
     {
-        UserInterface.Instance.ShowLosePanel();
+        Died?.Invoke();
+        if(HitPoints <= 0)
+            UserInterface.Instance.ShowLosePanel();
     }
 
     private void PlaySound(AudioClip clip)
@@ -242,5 +250,10 @@ public class Player : MonoBehaviour, IDamageable, IDancer
         _audioSource.clip = clip;
         _audioSource.Play();
     }
-    
+
+    public event Action<IDamageable, int> TakedDamage;
+    public event Action<int> Healed;
+    public event Action<int, int> Moved;
+    public event Action<IDamageable, int> Attacked;
+    public event Action Died;
 }

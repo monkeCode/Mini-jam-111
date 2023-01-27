@@ -52,10 +52,10 @@ public class Demon : Entity
 
     public override void Attack()
     {
-        Player.Instance.TakeDamage((uint) damage);
+        Player.Instance.TakeDamage((uint) damage, this);
         PlaySound(hitSound);
     }
-    public override void TakeDamage(uint damage)
+    public override void TakeDamage(uint damage, IDamageable source = null)
     {
         if (hitPoints > 0)
             hitPoints -= (int)damage;
