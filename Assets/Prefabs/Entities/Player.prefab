@@ -293,13 +293,14 @@ MonoBehaviour:
   _abilities: []
   _stats:
     Damage: 3
-    Health: 0
-    MaxHealth: 0
+    Health: 25
+    MaxHealth: 25
     Resist: 0
   _healAnimator: {fileID: 1811392646}
   _hitSound: {fileID: 8300000, guid: da755ab53d0ed5e47a0a4b9d40a1d957, type: 3}
   _abilitySound: {fileID: 8300000, guid: 6e5302c58ef8fa14b9b739e5005b1281, type: 3}
   _shieldSprite: {fileID: 4014677580069761720}
+  _testitem: {fileID: 0}
   _activeShield: {fileID: 0}
 --- !u!114 &3176250838126415576
 MonoBehaviour:
@@ -392,7 +393,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.797
   m_Pitch: 1
   Loop: 0
   Mute: 0

@@ -15,6 +15,6 @@ MonoBehaviour:
   _sequence: 030000000300000001000000
   _name: Fire spin
   _cost: 20
-  countOfEntities: 3
+  _radius: 2
   damage: 3
   effect: {fileID: 3770410752136888013, guid: 11766f8f2ef20cd438ed76037680728a, type: 3}

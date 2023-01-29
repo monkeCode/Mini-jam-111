@@ -5,7 +5,7 @@ using UnityEngine;
 public class HealAbility : Ability
 {
     [SerializeField] private int heal;
-    public override void Use(IDamageable target)
+    public override void Use(IDamageable target, Vector2 pos = default)
     {
         target.Heal((uint) heal);
     }

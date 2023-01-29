@@ -78,7 +78,7 @@ public class BossPlayer : Entity, IDancer
         if(_abilities.Count == 0)
             return;
         var random = Random.Range(0, _abilities.Count);
-        _abilities[random].Use(this);
+        _abilities[random].Use(this, transform.position);
         PlaySound(_abilitySound);
     }
 

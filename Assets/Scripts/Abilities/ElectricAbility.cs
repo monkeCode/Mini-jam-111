@@ -5,25 +5,28 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Ability/FireSpin",fileName = "FireAbility")]
 public class ElectricAbility : Ability
 {
-    [SerializeField] private int countOfEntities;
+    [SerializeField] private int _radius;
     [SerializeField] private int damage;
     [SerializeField] private GameObject effect;
 
-    public override void Use(IDamageable target)
+    public override void Use(IDamageable target, Vector2 pos = default)
     {
         if (target == Player.Instance)
         {
-            var entityList = GameManager.Instance.ActiveRoom.GetAllEntities().Take(countOfEntities);
-            foreach (var ent in entityList)
+            var entities = GameManager.Instance.ActiveRoom.GetAllEntities()
+                .Where(en => Vector2.Distance(en.transform.position, pos) <= _radius);
+            foreach (var en in entities)
             {
-                ent.TakeDamage((uint) damage);
-                Instantiate(effect, ent.transform.position, Quaternion.identity);
+                en.TakeDamage((uint) damage);
             }
         }
         else
         {
-            Player.Instance.TakeDamage((uint) damage);
-            Instantiate(effect, Player.Instance.transform.position, Quaternion.identity);
+            if(Vector2.Distance(pos, Player.Instance.transform.position) <= _radius)
+                Player.Instance.TakeDamage((uint) damage);
         }
+
+        var scale = effect.transform.localScale.x;
+        Instantiate(effect, pos, Quaternion.identity).transform.localScale = new Vector3(_radius* scale, _radius* scale, 1);
     }
 }

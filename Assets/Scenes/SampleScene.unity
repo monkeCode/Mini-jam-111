@@ -7947,18 +7947,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 3ee6867e9dc54384bad5681d8429b445, type: 2}
     - target: {fileID: 5382443151582610086, guid: 1496852f14bcf7846a3b1733b0c64740, type: 3}
-      propertyPath: _stats.Health
-      value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 5382443151582610086, guid: 1496852f14bcf7846a3b1733b0c64740, type: 3}
-      propertyPath: _stats.MaxHealth
-      value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 5382443151582610086, guid: 1496852f14bcf7846a3b1733b0c64740, type: 3}
-      propertyPath: _abilities.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5382443151582610086, guid: 1496852f14bcf7846a3b1733b0c64740, type: 3}
       propertyPath: _abilities.Array.data[0]
       value: 
       objectReference: {fileID: 11400000, guid: e961c975878a5f547be45156b19760ee, type: 2}

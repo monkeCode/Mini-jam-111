@@ -46,6 +46,9 @@ public class Player : MonoBehaviour, IDamageable, IDancer, IEntityObservable
     [SerializeField] private AudioClip _abilitySound;
     [SerializeField] private SpriteRenderer _shieldSprite;
 
+
+    [SerializeField] private Item _testitem;
+    
     private AudioSource _audioSource;
     private Animator _animator;
     private PlayerInventory _inventory;
@@ -104,6 +107,9 @@ public class Player : MonoBehaviour, IDamageable, IDancer, IEntityObservable
     private void Start()
     {
         _inventory = new PlayerInventory();
+        
+        if(_testitem != null)
+            EquipItem(Instantiate(_testitem));
     }
 
     private void Move(Vector2 dir)
@@ -158,7 +164,7 @@ public class Player : MonoBehaviour, IDamageable, IDancer, IEntityObservable
             var index = FindSubArrayIndex(sequences.Current.Sequence);
             if (index != -1)
             {
-                sequences.Current.Use(this);
+                sequences.Current.Use(this, transform.position);
                 used = true;
                 for (int i = index; i < sequences.Current.Sequence.Count + index; i++)
                 {
