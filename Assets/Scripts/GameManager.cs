@@ -27,8 +27,8 @@ public class GameManager : MonoBehaviour
     [Header("Items and Spells")]
     [SerializeField] private List<Item> _items;
     [SerializeField] private List<Ability> _spells;
-     private Room.RoomType[,] _map;
-     private List<Room> _roomList;
+    private Room.RoomType[,] _map;
+    private List<Room> _roomList;
     private AudioSource _source;
     public Room ActiveRoom
     {
@@ -111,6 +111,11 @@ public class GameManager : MonoBehaviour
         room.SetDoors(pos, new []{_map[pos.x-1,pos.y],_map[pos.x,pos.y-1],_map[pos.x+1,pos.y],_map[pos.x,pos.y+1]});
         _roomList.Add(room);
         return room;
+    }
+
+    public Room.RoomType[,] GetMap()
+    {
+        return (Room.RoomType[,]) _map.Clone();
     }
     
     public void RestartGame()

@@ -145,6 +145,15 @@ public partial class @GameInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Map"",
+                    ""type"": ""Button"",
+                    ""id"": ""e314b278-7091-4f16-bf4f-db7cdf902b12"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -180,6 +189,17 @@ public partial class @GameInput : IInputActionCollection2, IDisposable
                     ""action"": ""Inventory"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0c70ae74-5ceb-405d-bd80-219a3da539fb"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Map"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -195,6 +215,7 @@ public partial class @GameInput : IInputActionCollection2, IDisposable
         m_Menu_Sequences = m_Menu.FindAction("Sequences", throwIfNotFound: true);
         m_Menu_Pause = m_Menu.FindAction("Pause", throwIfNotFound: true);
         m_Menu_Inventory = m_Menu.FindAction("Inventory", throwIfNotFound: true);
+        m_Menu_Map = m_Menu.FindAction("Map", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -298,6 +319,7 @@ public partial class @GameInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_Menu_Sequences;
     private readonly InputAction m_Menu_Pause;
     private readonly InputAction m_Menu_Inventory;
+    private readonly InputAction m_Menu_Map;
     public struct MenuActions
     {
         private @GameInput m_Wrapper;
@@ -305,6 +327,7 @@ public partial class @GameInput : IInputActionCollection2, IDisposable
         public InputAction @Sequences => m_Wrapper.m_Menu_Sequences;
         public InputAction @Pause => m_Wrapper.m_Menu_Pause;
         public InputAction @Inventory => m_Wrapper.m_Menu_Inventory;
+        public InputAction @Map => m_Wrapper.m_Menu_Map;
         public InputActionMap Get() { return m_Wrapper.m_Menu; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -323,6 +346,9 @@ public partial class @GameInput : IInputActionCollection2, IDisposable
                 @Inventory.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnInventory;
                 @Inventory.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnInventory;
                 @Inventory.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnInventory;
+                @Map.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnMap;
+                @Map.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnMap;
+                @Map.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnMap;
             }
             m_Wrapper.m_MenuActionsCallbackInterface = instance;
             if (instance != null)
@@ -336,6 +362,9 @@ public partial class @GameInput : IInputActionCollection2, IDisposable
                 @Inventory.started += instance.OnInventory;
                 @Inventory.performed += instance.OnInventory;
                 @Inventory.canceled += instance.OnInventory;
+                @Map.started += instance.OnMap;
+                @Map.performed += instance.OnMap;
+                @Map.canceled += instance.OnMap;
             }
         }
     }
@@ -350,5 +379,6 @@ public partial class @GameInput : IInputActionCollection2, IDisposable
         void OnSequences(InputAction.CallbackContext context);
         void OnPause(InputAction.CallbackContext context);
         void OnInventory(InputAction.CallbackContext context);
+        void OnMap(InputAction.CallbackContext context);
     }
 }
