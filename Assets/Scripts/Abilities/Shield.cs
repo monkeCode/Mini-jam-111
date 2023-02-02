@@ -1,22 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Color = System.Drawing.Color;
 
-[CreateAssetMenu(menuName = "Shield/Base")]
-public class Shield:ScriptableObject,ITurned
+namespace Abilities
 {
-   [SerializeField] private int _turns;
-   [SerializeField] private UnityEngine.Color _color;
-   public UnityEngine.Color Color => _color;
-   public bool Active => _turns > 0;
-   public void NextTurn()
+   [CreateAssetMenu(menuName = "Shield/Base")]
+   public class Shield:ScriptableObject,ITurned
    {
-      _turns--;
-   }
+      [SerializeField] private int _turns;
+      [SerializeField] private UnityEngine.Color _color;
+      public UnityEngine.Color Color => _color;
+      public bool Active => _turns > 0;
+      public void NextTurn()
+      {
+         _turns--;
+      }
 
-   public virtual uint Defence(IDamageable target, uint damage)
-   {
-      return Active ? 0 : damage;
+      public virtual uint Defence(IDamageable target, uint damage)
+      {
+         return Active ? 0 : damage;
+      }
    }
 }

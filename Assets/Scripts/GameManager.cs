@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using Abilities;
 using Cinemachine;
+using Generators;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -16,19 +17,20 @@ public class GameManager : MonoBehaviour
         {Dance.Color.Purple, new Color(149/255.0f, 91/255.0f, 165/255.0f)},
         {Dance.Color.Null, Color.grey}
     };
-
-    [SerializeField] private Room _startRoom;
+    
+    [Header("Generators")]
+    [SerializeField] private DefaultMapGenerator _mapGenerator;
+    
+    private IMapGenerator _activeGenerator;
+    
     [SerializeField]private Room _activeRoom;
-    [SerializeField] private Room _bossRoom;
-    [SerializeField] private Room _shopRoom;
-    [SerializeField] private Room[] _rooms;
+    
     [SerializeField] private CinemachineVirtualCamera _camera;
     
     [Header("Items and Spells")]
     [SerializeField] private List<Item> _items;
     [SerializeField] private List<Ability> _spells;
-    private Room.RoomType[,] _map;
-    private List<Room> _roomList;
+    
     private AudioSource _source;
     public Room ActiveRoom
     {
@@ -52,12 +54,11 @@ public class GameManager : MonoBehaviour
             Instance = this;
         else Destroy(gameObject);
         
-        _map = GenerateMap();
+        _activeGenerator = Instantiate(_mapGenerator);
 
-        _roomList = new List<Room>();
-        ActiveRoom = Instantiate(_startRoom);
-        ActiveRoom.SetDoors(new Vector2Int(5,5),new []{_map[4,5],_map[5,4],_map[6,5],_map[5,6]});
-        _roomList.Add(ActiveRoom);
+        _activeGenerator.GenerateMap();
+
+        _activeRoom = _activeGenerator.GetStartRoom();
         _source = GetComponent<AudioSource>();
     }
     
@@ -82,40 +83,10 @@ public class GameManager : MonoBehaviour
     }
     
     private CinemachineBasicMultiChannelPerlin _noise;
-    private Room GenerateRoom()
-    {
-        var room = _rooms[Random.Range(0, _rooms.Length)];
-        return Instantiate(room);
-    }
-    private Room GenerateBossRoom()
-    {
-        return Instantiate(_bossRoom);
-    }
-
-    private Room GenerateShopRoom()
-    {
-        return Instantiate(_shopRoom);
-    }
-
-    public Room GetRoomAtPos(Vector2Int pos)
-    {
-        var room = _roomList.FirstOrDefault(r => r.Pos == pos);
-        if (room != null) return room;
-        var type = _map[pos.x, pos.y];
-        room = type switch
-        {
-            Room.RoomType.Boss => GenerateBossRoom(),
-            Room.RoomType.Shop => GenerateShopRoom(),
-            Room.RoomType.Simple => GenerateRoom(),
-        };
-        room.SetDoors(pos, new []{_map[pos.x-1,pos.y],_map[pos.x,pos.y-1],_map[pos.x+1,pos.y],_map[pos.x,pos.y+1]});
-        _roomList.Add(room);
-        return room;
-    }
-
+    
     public Room.RoomType[,] GetMap()
     {
-        return (Room.RoomType[,]) _map.Clone();
+        return _activeGenerator.GetMap();
     }
     
     public void RestartGame()
@@ -123,70 +94,6 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    private Room.RoomType[,] GenerateMap()
-    {
-        int CurrentRooms(int countOfRooms, int allRoomsCount, Room.RoomType[,] roomTypes, int i, int j, ref bool shopRoomEx,
-            ref bool bossRoomExist1)
-        {
-            var rand = Random.Range(0, 101);
-            if (rand <= (countOfRooms + 1) / allRoomsCount * 100 && !bossRoomExist1)
-            {
-                roomTypes[i, j] = Room.RoomType.Boss;
-                countOfRooms++;
-                bossRoomExist1 = true;
-            }
-            else if (rand <= countOfRooms / allRoomsCount * 100 && !shopRoomEx)
-            {
-                roomTypes[i, j] = Room.RoomType.Shop;
-                countOfRooms++;
-                shopRoomEx = true;
-            }
-            else if (rand < 30)
-            {
-                roomTypes[i, j] = Room.RoomType.Simple;
-                countOfRooms++;
-            }
-
-            return countOfRooms;
-        }
-
-        Room.RoomType[,] map = new Room.RoomType[10, 10];
-        int roomsCount = Random.Range(5,10);
-        int currentRooms = 0;
-        bool bossRoomExist = false;
-        bool shopRoomExist = false;
-        map[5, 5] = Room.RoomType.Simple;
-        while (currentRooms < roomsCount)
-        {
-            for(int i = 0; i < map.GetLength(0) && currentRooms <= roomsCount; i++)
-                for(int j = 0; j < map.GetLength(1) && currentRooms <= roomsCount; j++)
-                {
-                    
-                    if (map[i, j] == Room.RoomType.Simple || map[i,j] == Room.RoomType.Shop )
-                    {
-                        if (i + 1 < map.GetLength(0) && map[i + 1, j] == 0)
-                        {
-                            currentRooms = CurrentRooms(currentRooms, roomsCount, map, i+1, j, ref shopRoomExist, ref bossRoomExist);
-                        }
-                        if (i - 1 >= 0 && map[i - 1, j] == 0)
-                        {
-                            currentRooms = CurrentRooms(currentRooms, roomsCount, map, i-1, j, ref shopRoomExist, ref bossRoomExist);
-                        }
-                        if (j + 1 < map.GetLength(1) && map[i, j + 1] == 0)
-                        {
-                            currentRooms = CurrentRooms(currentRooms, roomsCount, map, i, j+1, ref shopRoomExist, ref bossRoomExist);
-                        }
-                        if (j - 1 >= 0 && map[i, j - 1] == 0)
-                        {
-                            currentRooms = CurrentRooms(currentRooms, roomsCount, map, i, j-1, ref shopRoomExist, ref bossRoomExist);
-                        }
-                    }
-                }
-        }
-
-        return map;
-    }
-    
     public void QuitGame()
     {
         Application.Quit();
@@ -211,5 +118,10 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(.2f);
         _noise.m_AmplitudeGain = 0;
         _noise.m_FrequencyGain = 0;
+    }
+
+    public Room GetRoomAtPos(Vector2Int pos)
+    {
+        return _activeGenerator.GetRoomAtPos(pos);
     }
 }

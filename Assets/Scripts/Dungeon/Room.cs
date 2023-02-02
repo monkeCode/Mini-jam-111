@@ -52,8 +52,6 @@ public class Room : MonoBehaviour
     public IReadOnlyList<IFloorTile> Tiles => _tiles;
     private IFloorTile[,] _logicalMap;
     private Vector2Int _offset;
-    private int? _bossWay = null;
-    private int? shopWay = null;
     public Vector2Int Pos;
     private void Start()
     {
@@ -69,12 +67,10 @@ public class Room : MonoBehaviour
                 _ways.GetWays()[i].BlockDoor();
             if (doors[i] == RoomType.Boss)
             {
-                _bossWay = i;
                 _ways.GetWays()[i].gameObject.GetComponent<SpriteRenderer>().color = Color.red;
             }
             if (doors[i] == RoomType.Shop)
             {
-                shopWay = i;
             }
         }
     }

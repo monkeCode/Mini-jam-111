@@ -49,6 +49,7 @@ namespace Dance{
         {
             dancer.AddColor(_color);
             _turnNow = _updateTurns+1;
+            RandomColor();
         }
     }
 }

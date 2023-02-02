@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Abilities;
 using UnityEngine;
 [CreateAssetMenu(menuName = "Ability/Teleport")]
 public class TeleportAbility : Ability
