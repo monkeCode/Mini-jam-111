@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Abilities;
+using DG.Tweening;
 using UnityEngine;
 using Color = Dance.Color;
 [RequireComponent(typeof(AudioSource))]
@@ -55,6 +57,9 @@ public class Player : MonoBehaviour, IDamageable, IDancer, IEntityObservable
     private PlayerInventory _inventory;
     public PlayerInventory Inventory => _inventory;
     private int _coins;
+    
+    private bool _canMove = true;
+    
     public event Action<int> CoinsChanged;
     public event Action<int> HpChanged;
 
@@ -115,7 +120,7 @@ public class Player : MonoBehaviour, IDamageable, IDancer, IEntityObservable
 
     private void Move(Vector2 dir)
     {
-        if (Math.Abs(dir.x) < 1 && Math.Abs(dir.y) < 1)
+        if (!_canMove || (Math.Abs(dir.x) < 1 && Math.Abs(dir.y) < 1))
             return;
         var entity = GameManager.Instance.ActiveRoom.GetAllEntities().FirstOrDefault(en => (Vector2)en.transform.position == (Vector2)transform.position + dir);
         if (entity != null)
@@ -133,13 +138,29 @@ public class Player : MonoBehaviour, IDamageable, IDancer, IEntityObservable
             return;
         }
         GameManager.Instance.NextTurn();
+        StartCoroutine(MoveDelay());
         if (_activeShield == null) return;
         _activeShield.NextTurn();
         _shieldSprite.enabled = _activeShield.Active;
+
     }
 
+    private IEnumerator MoveDelay()
+    {
+        _canMove = false;
+        yield return new WaitForSeconds(0.3f);
+        _canMove = true;
+    }
+    
+    private void AttackAnimation(Transform pos)
+    {
+        var startPos = transform.position;
+        transform.DOMove((pos.position+startPos)/2, 0.15f).OnComplete(() => transform.DOMove(startPos, 0.15f));
+    }
+    
     private void Attack(Entity entity)
     {
+        AttackAnimation(entity.transform);
         entity.TakeDamage((uint) _stats.Damage);
         Attacked?.Invoke(entity, _stats.Damage);
         PlaySound(_hitSound);

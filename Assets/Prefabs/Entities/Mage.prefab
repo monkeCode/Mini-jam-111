@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -7789319075583381709}
   - component: {fileID: 6740890687710331660}
   m_Layer: 0
-  m_Name: Boss
+  m_Name: Mage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -102,14 +102,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e133403aa1a48f4390a7d4eef137e14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitPoints: 0
-  maxHitPoints: 0
+  hitPoints: 6
+  maxHitPoints: 6
   damage: 4
   hitSound: {fileID: 8300000, guid: da755ab53d0ed5e47a0a4b9d40a1d957, type: 3}
   activeShield: {fileID: 0}
-  _abilities: []
+  _teleportAbility: {fileID: 11400000, guid: 240a1ad03084486479e34c45e1dda05f, type: 2}
+  _fireSpinAbility: {fileID: 11400000, guid: e961c975878a5f547be45156b19760ee, type: 2}
+  _laserAbility: {fileID: 11400000, guid: 96063bf2e7b9f8249824a1eceed3b366, type: 2}
   _abilityAnimator: {fileID: 7632639085132726459}
-  _healSound: {fileID: 0}
   _abilitySound: {fileID: 8300000, guid: 6e5302c58ef8fa14b9b739e5005b1281, type: 3}
   _shieldRenderer: {fileID: 592678182555550138}
 --- !u!95 &7632639083614058326

@@ -10,13 +10,21 @@ namespace Abilities
         [SerializeField] private GameObject _laserPrefab;
         public override void Use(IDamageable target, Vector2 pos = default)
         {
-            var entities = GameManager.Instance.ActiveRoom.GetAllEntities();
-            entities = entities.Where(en => en.transform.position.x == pos.x || en.transform.position.y == pos.y).ToList();
-            foreach (var entity in entities)
+            if (target != Player.Instance)
             {
-                entity.TakeDamage(_damage);
+                if(Player.Instance.transform.position.x == pos.x || Player.Instance.transform.position.y == pos.y)
+                    Player.Instance.TakeDamage(_damage);
             }
-            var laser =Instantiate(_laserPrefab, pos, Quaternion.identity);
+            else
+            {
+                var entities = GameManager.Instance.ActiveRoom.GetAllEntities();
+                entities = entities.Where(en => en.transform.position.x == pos.x || en.transform.position.y == pos.y).ToList();
+                foreach (var entity in entities)
+                {
+                    entity.TakeDamage(_damage);
+                }
+            }
+            var laser = Instantiate(_laserPrefab, pos, Quaternion.identity);
             Destroy(laser,1f);
         }
     }

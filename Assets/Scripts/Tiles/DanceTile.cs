@@ -25,12 +25,16 @@ namespace Dance{
     [ContextMenu("RandomColor")]
     public void RandomColor()
     {
-        _color = (Color) Random.Range(1, 6);
+        var color = (Color) Random.Range(1, 6);
+        SetColor(color);
+    }
+    public void SetColor(Color color)
+    {
+        _color = color;
         _sprite ??= GetComponent<SpriteRenderer>();
         if(ActiveTile)
             _sprite.color = GameManager.Colors[_color];
         _light.color = GameManager.Colors[_color];
-
     }
     public void NextTurn()
     {

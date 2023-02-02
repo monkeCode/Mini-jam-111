@@ -5,11 +5,12 @@ using Abilities;
 using UnityEngine;
 using Color = Dance.Color;
 
-public class BossPlayer : Entity, IDancer
+public class Mage : Entity, IDancer
 {
-    [SerializeField] private List<Ability> _abilities;
+    [SerializeField] private Ability _teleportAbility;
+    [SerializeField] private Ability _fireSpinAbility;
+    [SerializeField] private Ability _laserAbility;
     [SerializeField] private Animator _abilityAnimator;
-    [SerializeField] private AudioClip _healSound;
     [SerializeField] private AudioClip _abilitySound;
     [SerializeField] private SpriteRenderer _shieldRenderer;
     private Animator _animator;
@@ -17,9 +18,7 @@ public class BossPlayer : Entity, IDancer
     protected override void Start()
     {
         base.Start();
-        maxHitPoints = (int)(Player.Instance.MaxHitPoints*1.5f);
         hitPoints = maxHitPoints;
-        _abilities = Player.Instance.Abilities.ToList();
         _animator = GetComponent<Animator>();
     }
 
@@ -44,13 +43,13 @@ public class BossPlayer : Entity, IDancer
 
         _turn++;
         var random = Random.Range(1, 101);
-        if (random <= 70)
+        if (random <= 50)
         {
             Move();
         }
         else
         {
-            UseRandomAbility();
+            UseAbility();
         }
     }
 
@@ -74,12 +73,16 @@ public class BossPlayer : Entity, IDancer
         if (hitPoints <= 0)
             Die();
     }
-    private void UseRandomAbility()
+    private void UseAbility()
     {
-        if(_abilities.Count == 0)
-            return;
-        var random = Random.Range(0, _abilities.Count);
-        _abilities[random].Use(this, transform.position);
+        var playerPos = Player.Instance.transform.position;
+        var distance = Vector2.Distance(transform.position, playerPos);
+        if(distance < 3)
+            _fireSpinAbility.Use(this, transform.position);
+        else if(distance < 2)
+            _teleportAbility.Use(this, transform.position);
+        else
+            _laserAbility.Use(this, transform.position);
         PlaySound(_abilitySound);
     }
 

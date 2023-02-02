@@ -26,10 +26,11 @@ public class Entity : MonoBehaviour, IDamageable, ITurned
 
   public virtual void TakeDamage(uint damage, IDamageable source = null)
   {
-      damage = activeShield.Defence(this,damage);
-        if (hitPoints > 0)
-            hitPoints -= (int)damage;
-        if (hitPoints <= 0)
+      if(activeShield != null)
+        damage = activeShield.Defence(this,damage);
+      if (hitPoints > 0)
+          hitPoints -= (int)damage;
+      if (hitPoints <= 0)
             Die();
   }
 
@@ -62,9 +63,17 @@ public class Entity : MonoBehaviour, IDamageable, ITurned
 
     public virtual void Attack()
     {
+        AttackAnimation(Player.Instance.transform);
         Player.Instance.TakeDamage((uint) damage, this);
         PlaySound(hitSound);
     }
+
+    protected void AttackAnimation(Transform pos)
+    {
+        var startPos = transform.position;
+        transform.DOMove((pos.position+ startPos)/2, 0.15f).OnComplete(() => transform.DOMove(startPos, 0.15f));
+    }
+
     public virtual void Move()
     {
         var playerPos = Player.Instance.transform.position;
@@ -73,6 +82,7 @@ public class Entity : MonoBehaviour, IDamageable, ITurned
             return;
         if(stack.Count > 1)
             transform.position = (Vector2)transform.position + stack.Pop();
+        
         else
         {
             Attack();
