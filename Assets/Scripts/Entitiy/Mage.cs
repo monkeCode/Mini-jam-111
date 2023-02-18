@@ -52,12 +52,6 @@ public class Mage : Entity, IDancer
             UseAbility();
         }
     }
-
-    public override void Move()
-    {
-        base.Move();
-        GameManager.Instance.ActiveRoom.GetFloorTile(transform.position).Step(transform);
-    }
     public override void Heal(uint healp)
     {
         base.Heal(healp);

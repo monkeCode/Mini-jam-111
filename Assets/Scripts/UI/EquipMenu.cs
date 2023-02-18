@@ -51,5 +51,10 @@ public class EquipMenu : MonoBehaviour
         Player.Instance.UnequipItem(_currentItem);
         UpdateItems();
     }
+
+    private void OnEnable()
+    {
+        UpdateItems();
+    }
 }
 

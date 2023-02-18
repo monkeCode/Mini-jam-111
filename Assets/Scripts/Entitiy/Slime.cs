@@ -30,12 +30,12 @@ public class Slime : Entity
 
             if (!GameManager.Instance.ActiveRoom.CanMove((Vector2) transform.position + direction, out var tile))
                 continue;
-            transform.position += (Vector3) direction;
+            var pos = (Vector2)transform.position + direction;
+            MoveToTile(pos);
             if (tile is DanceTile t)
             {
                 t.SetColor(_color);
             }
-
             return;
         }
     }

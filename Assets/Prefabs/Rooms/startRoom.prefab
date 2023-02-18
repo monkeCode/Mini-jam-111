@@ -54,11 +54,7 @@ MonoBehaviour:
     Right: {fileID: 1825757382496483725}
     Top: {fileID: 8892591986938607693}
     Bottom: {fileID: 5181581334094480825}
-  Rooms:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  Pos: {x: 0, y: 0}
 --- !u!1 &1286806075132991129
 GameObject:
   m_ObjectHideFlags: 0
@@ -645,6 +641,8 @@ Tilemap:
   m_TileAssetArray:
   - m_RefCount: 54
     m_Data: {fileID: 11400000, guid: 72754f987b9471b4c88037bf79467342, type: 2}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   m_TileSpriteArray:
   - m_RefCount: 0
     m_Data: {fileID: 0}
@@ -675,6 +673,8 @@ Tilemap:
   m_TileObjectToInstantiateArray:
   - m_RefCount: 54
     m_Data: {fileID: 3727303021908163521, guid: ce913c6dac873e343babacbeb7fa4d2c, type: 3}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Origin: {x: -3, y: -4, z: 0}

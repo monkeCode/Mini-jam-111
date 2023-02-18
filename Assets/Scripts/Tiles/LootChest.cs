@@ -7,7 +7,6 @@ using Random = UnityEngine.Random;
 [RequireComponent(typeof(SpriteRenderer))]
 public class LootChest : MonoBehaviour, IFloorTile
 {
-    [SerializeField] private EventText _eventText;
     [SerializeField] private ParticleSystem _moneyParticle;
     [Header("Sprites")]
     [SerializeField] private Sprite _closeSprite;
@@ -45,7 +44,7 @@ public class LootChest : MonoBehaviour, IFloorTile
 
             countCoins += Random.Range(5, 15);
             lootText += $"{countCoins} coins";
-            Instantiate(_eventText, transform.position, Quaternion.identity).Init(lootText);
+            UserInterface.Instance.CreateText(lootText,transform.position);
             Player.Instance.Coins += countCoins;
             _moneyParticle.Play();
         }
@@ -59,8 +58,9 @@ public class LootChest : MonoBehaviour, IFloorTile
                 return;
             }
             Player.Instance.AddAbility(Instantiate(spell));
-            Instantiate(_eventText, transform.position, Quaternion.identity).Init("New Ability: " + spell.Name);
-               
+            
+            UserInterface.Instance.CreateText("New Ability: " + spell.Name, transform.position);
+
         }
         GameManager.Instance.Play(_openSound);
         isLooted = true;
@@ -70,6 +70,8 @@ public class LootChest : MonoBehaviour, IFloorTile
     }
 
     public bool CanStep => GameManager.Instance.ActiveRoom.GetAllEntities().Count == 0;
+    public uint StepCost => 1;
+
     public void Step(Transform target)
     {
         if(isLooted) return;

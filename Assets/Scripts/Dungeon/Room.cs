@@ -134,14 +134,14 @@ public class Room : MonoBehaviour
         {
             matrix[i,j] = (_logicalMap[i,j] != null && _logicalMap[i,j].CanStep)?int.MaxValue : -1;
         }
-
+    
         foreach (var ent in _entities)
         {
             var pos = ((Entity)ent).transform.position;
             matrix[(int) (pos.y - _offset.y), (int) (pos.x - _offset.x)] = -1;
         }
         matrix[(int) start.y,(int) start.x] = 0;
-
+    
         int[] Neighbors(int i1, int i2)
         {
             int[] neighbors1 = {-1, -1, -1, -1};
@@ -169,7 +169,7 @@ public class Room : MonoBehaviour
                     {
                         var min = neighbors.Where(item => item >= 0).Min();
                         if (min != int.MaxValue)
-                            min++;
+                            min += (int)_logicalMap[y, x].StepCost;
                         if(min < matrix[y, x])
                             matrix[y, x] = min;
                     }
@@ -180,7 +180,7 @@ public class Room : MonoBehaviour
                 }
             }
         }
-
+    
         if (matrix[(int) end.y, (int) end.x] == int.MaxValue || matrix[(int) end.y, (int) end.x] == -1 )
             return null;
         var points = new Stack<Vector2Int>();
@@ -203,9 +203,10 @@ public class Room : MonoBehaviour
             points.Push(vector2Int);
             currentPlace -= vector2Int;
         }
-
+    
         return points;
     }
+    
 
     public void UpdateMap()
     {

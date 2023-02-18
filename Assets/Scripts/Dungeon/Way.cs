@@ -68,9 +68,12 @@ public class Way : MonoBehaviour,IFloorTile
         _wayState = WayState.Close;
     }
     public bool CanStep => _wayState == WayState.Open;
+    public uint StepCost => 1;
+
     public void Step(Transform target)
     {
-        Exit(target);
+        if(target.TryGetComponent(out Player player))
+            Exit(target);
     }
 
     public void NextTurn()
@@ -78,10 +81,5 @@ public class Way : MonoBehaviour,IFloorTile
         
     }
 
-    public void SetBossRoom()
-    {
-        UnblockDoor();
-        _doorRenderer.color = Color.red;
-    }
     public Vector2 Position => transform.position;
 }

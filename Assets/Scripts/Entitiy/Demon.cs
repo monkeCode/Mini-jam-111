@@ -42,7 +42,7 @@ public class Demon : Entity
         if(stack == null)
             return;
         if(stack.Count > 1)
-            transform.position = (Vector2)transform.position + stack.Pop();
+            MoveToTile(stack.Pop()+ (Vector2)transform.position);
         else
         {
             IsAttack = true;

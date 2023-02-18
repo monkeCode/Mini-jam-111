@@ -46,6 +46,8 @@ namespace Dance{
     public Vector2 Position => transform.position;
 
     public bool CanStep => true;
+    public uint StepCost => 1;
+
     public void Step(Transform target)
     {
         if (!ActiveTile) return;

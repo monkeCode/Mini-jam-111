@@ -80,9 +80,10 @@ public class Entity : MonoBehaviour, IDamageable, ITurned
         var stack = GameManager.Instance.ActiveRoom.MoveToPos(transform.position, playerPos);
         if(stack == null)
             return;
-        if(stack.Count > 1)
-            transform.position = (Vector2)transform.position + stack.Pop();
-        
+        if (stack.Count > 1)
+        {
+           MoveToTile(stack.Pop() + (Vector2)transform.position);
+        }
         else
         {
             Attack();
@@ -92,5 +93,11 @@ public class Entity : MonoBehaviour, IDamageable, ITurned
     {
         audioSource.clip = clip;
         audioSource.Play();
+    }
+
+    protected virtual void MoveToTile(Vector2 pos)
+    {
+        transform.position = pos;
+        GameManager.Instance.ActiveRoom.GetFloorTile(pos).Step(transform);
     }
 }

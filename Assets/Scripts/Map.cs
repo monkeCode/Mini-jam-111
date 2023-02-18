@@ -12,16 +12,6 @@ public class Map : MonoBehaviour
     [SerializeField] private GameObject _layout;
 
     private List<GameObject> _items = new();
-    private void Start()
-    {
-        Player.Instance.input.Menu.Map.performed += context =>
-        {
-            if (!_layout.activeSelf)
-                Open();
-            else
-                Close();
-        };
-    }
 
     private void Open()
     {
@@ -71,5 +61,15 @@ public class Map : MonoBehaviour
         }
         _items.Clear();
         _layout.SetActive(false);
+    }
+
+    private void OnEnable()
+    {
+        Open();
+    }
+
+    private void OnDisable()
+    {
+        Close();
     }
 }

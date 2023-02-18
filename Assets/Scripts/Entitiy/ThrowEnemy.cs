@@ -20,7 +20,7 @@ public class ThrowEnemy : Entity
         var playerPos = Player.Instance.transform.position;
         var horizontalStack = GameManager.Instance.ActiveRoom.MoveToPos(transform.position, new Vector2(playerPos.x, transform.position.y));
         var verticalStack = GameManager.Instance.ActiveRoom.MoveToPos(transform.position, new Vector2(transform.position.x, playerPos.y));
-        Vector2 nextMove = Vector2.zero;
+        Vector2 nextMove;
         if((horizontalStack == null && verticalStack == null) || _lookDistance > Math.Max(horizontalStack?.Count??0, verticalStack?.Count??0))
         {
             base.Move();
@@ -36,16 +36,9 @@ public class ThrowEnemy : Entity
         }
         else
         {
-            if(horizontalStack.Count < verticalStack.Count)
-            {
-                nextMove = horizontalStack.Pop();
-            }
-            else
-            {
-                nextMove = verticalStack.Pop();
-            }
+            nextMove = horizontalStack.Count < verticalStack.Count ? horizontalStack.Pop() : verticalStack.Pop();
         }
-        transform.position += (Vector3)nextMove;
+        MoveToTile(nextMove + (Vector2)transform.position);
     }
 
     public override void NextTurn()

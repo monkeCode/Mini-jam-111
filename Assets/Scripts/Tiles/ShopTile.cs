@@ -7,6 +7,7 @@ public class ShopTile : MonoBehaviour, IFloorTile
 {
 
     public bool CanStep => _isSold || Player.Instance.Coins >= _cost;
+    public uint StepCost => 1;
     private ISellableItem _item;
     [SerializeField] private TextMeshProUGUI _text;
     [SerializeField] private Transform _itemPresenter;

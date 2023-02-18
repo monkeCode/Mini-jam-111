@@ -11,14 +11,14 @@ public class UserInterface : MonoBehaviour
     public static UserInterface Instance { get; private set; }
     [SerializeField] private Slider _hpBar;
     [SerializeField] private Image[] _sequence;
-    [SerializeField] private GameObject _sequenceList;
     [SerializeField] private GameObject _sequenceBase;
-    [SerializeField] private AvaliableSequence _sequencePrefab;
     [SerializeField] private GameObject _pausePanel;
     [SerializeField] private GameObject _losePanel;
     [SerializeField] private GameObject _winPanel;
     [SerializeField] private GameObject _inventoryPanel;
+    [SerializeField] private GameObject _mapPanel;
     [SerializeField] private TextMeshProUGUI _coinsText;
+    [SerializeField] private EventText _eventText;
     private bool _showSequence;
     private bool _showPause;
 
@@ -39,9 +39,10 @@ public class UserInterface : MonoBehaviour
 
     void Start()
     {
-        Player.Instance.input.Menu.Sequences.performed += context => LookSequences();
+        Player.Instance.input.Menu.Sequences.performed += context => ShowPanel(_sequenceBase);
         Player.Instance.input.Menu.Pause.performed += context => ShowPausePanel();
-        Player.Instance.input.Menu.Inventory.performed += context => ShowInventory();
+        Player.Instance.input.Menu.Inventory.performed += context => ShowPanel(_inventoryPanel);
+        Player.Instance.input.Menu.Map.performed += context => ShowPanel(_mapPanel);
         Player.Instance.CoinsChanged += UpdateCoins;
         Player.Instance.HpChanged += UpdateHpBar;
     }
@@ -60,36 +61,7 @@ public class UserInterface : MonoBehaviour
         }
     }
 
-    private List<GameObject> _sequenceObjects = new();
-
-    private void LookSequences()
-    {
-        _inventoryPanel.SetActive(false);
-        if(_showSequence)
-        {
-            _sequenceBase.SetActive(false);
-            _showSequence = false;
-            foreach (var it in _sequenceObjects)
-            {
-                Destroy(it);
-            }
-            _sequenceObjects.Clear();
-        }
-        else
-        {
-            _sequenceBase.SetActive(true);
-            _showSequence = true;
-
-
-            for (int i = 0; i < Player.Instance.Abilities.Count; i++)
-            {
-                var item = Instantiate(_sequencePrefab, _sequenceList.transform);
-                item.transform.localPosition = new Vector3(10, -i * 100, 0);
-                    item.Init(Player.Instance.Abilities[i].Sequence.ToArray(), Player.Instance.Abilities[i].Name);
-                    _sequenceObjects.Add(item.gameObject);
-            }
-        }
-    }
+   
     public void ShowPausePanel()
     {
         if(_showPause)
@@ -100,26 +72,29 @@ public class UserInterface : MonoBehaviour
         }
         else
         {
+            CloseAllPanels();
             _pausePanel.SetActive(true);
             _showPause = true;
             Player.Instance.input.Player.Disable();
         }
     }
 
-    public void ShowInventory()
+    private void CloseAllPanels()
     {
+        _inventoryPanel.SetActive(false);
+        _mapPanel.SetActive(false);
         _sequenceBase.SetActive(false);
-        _showSequence = false;
-        foreach (var it in _sequenceObjects)
-        {
-            Destroy(it);
-        }
-        _sequenceObjects.Clear();
-        
-        _inventoryPanel.SetActive(!_inventoryPanel.activeSelf);
-        if(_inventoryPanel.activeSelf)
-            _inventoryPanel.GetComponent<EquipMenu>().UpdateItems();
     }
+
+    private void ShowPanel(GameObject panel)
+    {
+        if(_showPause) return;
+        var activeState = panel.activeSelf;
+        CloseAllPanels();
+        panel.SetActive(!activeState);
+
+    }
+
     public void ShowWinPanel()
     {
         _winPanel.SetActive(true);
@@ -154,5 +129,10 @@ public class UserInterface : MonoBehaviour
     public void UpdateStats()
     {
         UpdateHpBar(Player.Instance.HitPoints);
+    }
+
+    public void CreateText(string text, Vector2 pos)
+    {
+        Instantiate(_eventText, pos, Quaternion.identity).Init(text);
     }
 }
